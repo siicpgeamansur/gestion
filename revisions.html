@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Planning de révision · CPGE PCSI/PSI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{
+  --font-ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --bg:#ffffff;--bar:#eeeeee;--panel:#ffffff;--panel2:#f1f3f6;--field:#ffffff;--line:#b9bfc7;
+  --fg:#111111;--muted:#5a6068;--accent:#2e6da4;--accent-fg:#ffffff;--accent-soft:#dcebf8;--accent-ink:#1b4a76;
+  --ok:#1e7a2e;--warn:#9a5b00;--bad:#c0281f;
+  --ok-soft:rgba(30,122,46,.15);--warn-soft:rgba(154,91,0,.14);--bad-soft:rgba(192,40,31,.13);
+  --overlay:rgba(10,16,22,.55);--shadow:rgba(0,0,0,.28);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#14181d;--bar:#1d232a;--panel:#191e24;--panel2:#212830;--field:#14181d;--line:#3b4551;
+  --fg:#e8ecf0;--muted:#9ba6b2;--accent:#5b9bd5;--accent-fg:#0b1620;--accent-soft:#203449;--accent-ink:#b3d4f2;
+  --ok:#62c673;--warn:#e3a94f;--bad:#f2766d;
+  --ok-soft:rgba(98,198,115,.18);--warn-soft:rgba(227,169,79,.17);--bad-soft:rgba(242,118,109,.17);
+  --overlay:rgba(0,0,0,.65);--shadow:rgba(0,0,0,.6);color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 var(--font-ui)}
+button,input,select,textarea{font:inherit;color:inherit}
+.inner{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#app{height:100%;display:flex;flex-direction:column;min-height:0}
+.band{background:var(--bar);border-bottom:1px solid var(--line);flex:none}
+.row{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding-block:7px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;letter-spacing:.01em}
+.brand small{font-weight:400;color:var(--muted);font-size:13px}
+.files{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn{font-weight:500;font-size:13px;padding:6px 11px;border:1px solid var(--line);background:var(--panel);border-radius:7px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.pri{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.sm{padding:3px 8px;font-size:12px}
+:is(button,input,select,textarea,summary):focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;background:var(--panel);max-width:100%;overflow-x:auto}
+.seg button{border:0;background:transparent;padding:7px 14px;font-weight:500;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
+.main{flex:1;min-height:0;overflow-y:auto}
+#ws{padding:16px max(16px,env(safe-area-inset-left,0px)) 34px;max-width:1100px;margin:0 auto}
+#ws h2{font-size:22px;margin:0 0 6px;text-wrap:balance}
+#ws h3{font-size:16.5px;margin:26px 0 6px;text-wrap:balance}
+#ws p{font-size:14px;line-height:1.55;margin:4px 0 8px}
+.lead{color:var(--muted)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:60;max-width:90vw}
+#dlg{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlgbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(640px,100%);max-height:88%;display:flex;flex-direction:column}
+.dlgbox header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dlgbox header b{font-size:16px}
+.dlgbox .dbody{padding:14px 16px;overflow:auto}
+.dlgbox p,.dlgbox li{margin:4px 0;font-size:13.5px}
+
+/* --- section card --- */
+.section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.section h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:8px}
+.section h3 .badge{font:500 11px var(--font-mono);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 7px;color:var(--muted)}
+
+/* --- subject cards --- */
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.subj-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.subj-head{display:flex;align-items:center;gap:8px;padding:9px 12px;color:#fff;font-weight:600}
+.subj-head .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 0 0 2px rgba(0,0,0,.08) inset}
+.subj-body{padding:10px 12px}
+.subj-row{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.subj-row label{font-size:12.5px;color:var(--muted);flex:none}
+.subj-row input[type=number]{width:70px;padding:4px 8px;background:var(--field);border:1px solid var(--line);border-radius:6px}
+.subj-row .code-status{font-size:12px;color:var(--muted);flex:1;text-align:right}
+.subj-row .code-status.ok{color:var(--ok)}
+.subj-row .code-status.bad{color:var(--bad)}
+.subj-body textarea{width:100%;min-height:52px;background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:12px/1.4 var(--font-mono);resize:vertical}
+.subj-body textarea.bad{border-color:var(--bad)}
+.subj-stats{display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:6px}
+.subj-stats b{font-family:var(--font-mono);font-weight:500;font-size:12px}
+.subj-stats .l1 b{color:var(--bad)}
+.subj-stats .l2 b{color:var(--warn)}
+.subj-stats .l3 b{color:var(--ok)}
+
+/* --- period --- */
+.period-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 18px;align-items:end}
+.period-grid label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.period-grid input{background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+.period-grid .check{flex-direction:row;align-items:center;gap:8px;color:var(--fg);font-size:13px}
+.period-grid .check input{width:auto}
+
+/* --- plan display --- */
+.plan-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0 16px}
+.pstat{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel)}
+.pstat .lbl{font-size:11.5px;color:var(--muted)}
+.pstat .val{font:500 16px var(--font-mono);font-variant-numeric:tabular-nums}
+
+.plan-days{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plan-day{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);page-break-inside:avoid;break-inside:avoid}
+.plan-day .day-header{padding:6px 10px;background:var(--panel2);border-bottom:1px solid var(--line);font-size:13px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.plan-day .day-header .date{color:var(--muted);font-weight:400;font-size:12.5px}
+.plan-day.off{opacity:.75}
+.plan-day.off .day-body{padding:12px;text-align:center;color:var(--muted);font-size:13px;font-style:italic}
+.slot{display:grid;grid-template-columns:98px 1fr;gap:4px 10px;padding:6px 10px;border-left:5px solid #ccc;background:#fafafa;margin:0;font-size:12.5px}
+.slot+.slot{border-top:1px solid rgba(0,0,0,.06)}
+.slot .time{grid-column:1;grid-row:1/3;font:500 11.5px var(--font-mono);color:#333;align-self:center}
+.slot .subj{grid-column:2;font-weight:600;font-size:12.5px}
+.slot .cont{grid-column:2;color:#333;font-size:11.5px}
+.slot.lunch{background:var(--panel2);border-left-color:var(--line);color:var(--muted);font-style:italic;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px}
+.slot.lunch .time{color:var(--muted);align-self:auto;grid-row:auto}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px}
+
+/* --- advice --- */
+.advice-toc{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0 18px;font-size:13.5px}
+.advice-toc b{display:block;margin-bottom:4px}
+.advice-toc ol{margin:0;padding-left:20px}
+.advice-toc li{margin:2px 0}
+.advice-card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;background:var(--panel)}
+.advice-card h3{margin:0 0 6px;font-size:16px;display:flex;align-items:center;gap:8px}
+.advice-card p{margin:4px 0 8px;font-size:14px;line-height:1.55}
+.advice-card ul,.advice-card ol{margin:4px 0 8px;padding-left:22px}
+.advice-card li{margin:3px 0;font-size:13.5px;line-height:1.5}
+.advice-card .tip{background:var(--accent-soft);color:var(--accent-ink);border-radius:6px;padding:8px 12px;font-size:13px;margin-top:8px}
+
+/* --- print --- */
+#printRoot{display:none}
+
+@media (max-width:820px){
+  .plan-days{grid-template-columns:1fr}
+  .slot{grid-template-columns:90px 1fr}
+}
+@media print {
+  @page { size: A4 portrait; margin: 8mm; }
+  body{background:#fff !important;color:#000 !important}
+  #app, #toast, #dlg{display:none !important}
+  #printRoot{display:block !important;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#000;font-size:9.5pt}
+  #printRoot h1{font-size:16pt;margin:0 0 2mm}
+  #printRoot .plan-meta{font-size:9pt;color:#444;margin-bottom:3mm}
+  #printRoot .plan-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm;margin-bottom:4mm}
+  #printRoot .pstat{border:1px solid #ccc;border-radius:3px;padding:2mm 3mm;font-size:8.5pt}
+  #printRoot .pstat .lbl{color:#555;font-size:7.5pt}
+  #printRoot .pstat .val{font:600 10pt 'IBM Plex Mono',monospace}
+  #printRoot .plan-days{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+  #printRoot .plan-day{page-break-inside:avoid;break-inside:avoid}
+  #printRoot .slot{padding:1mm 2mm !important;font-size:8pt !important;border-left-width:3px !important}
+  #printRoot .slot .time{font-size:7.5pt !important}
+  #printRoot .slot .subj{font-size:8pt !important}
+  #printRoot .slot .cont{font-size:7.5pt !important}
+  #printRoot .plan-day .day-header{font-size:8.5pt !important;padding:1mm 2mm !important}
+  #printRoot .legend{font-size:8pt;margin-bottom:3mm}
+  #printRoot .legend i{width:9px;height:9px}
+  #printRoot .subj-tbl{width:100%;border-collapse:collapse;font-size:8pt;margin-bottom:3mm}
+  #printRoot .subj-tbl th,#printRoot .subj-tbl td{border:1px solid #ddd;padding:1mm 2mm;text-align:left}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="band"><div class="inner row">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <rect x="3" y="5" width="20" height="18" fill="none" stroke="var(--fg)" stroke-width="1.6" rx="2"/>
+        <line x1="3" y1="10" x2="23" y2="10" stroke="var(--fg)" stroke-width="1.6"/>
+        <line x1="8" y1="2" x2="8" y2="7" stroke="var(--fg)" stroke-width="1.6"/>
+        <line x1="18" y1="2" x2="18" y2="7" stroke="var(--fg)" stroke-width="1.6"/>
+        <rect x="7" y="13" width="4" height="3" fill="var(--accent)"/>
+        <rect x="13" y="13" width="4" height="3" fill="var(--ok)"/>
+        <rect x="7" y="18" width="4" height="3" fill="var(--warn)"/>
+      </svg>
+      <span>Planning de révision <small>CPGE scientifique · PCSI / PSI</small></span>
+    </div>
+    <div class="files">
+      <button class="btn" id="bTheme" type="button" aria-pressed="false">Mode sombre</button>
+      <button class="btn pri" id="bPrint" type="button" disabled>Exporter en PDF</button>
+    </div>
+  </div></header>
+  <div class="band" id="modes"><div class="inner row">
+    <div class="seg" id="mainSeg" role="tablist" aria-label="Sections">
+      <button type="button" role="tab" id="tabPlan" aria-pressed="true" aria-selected="true">Planning</button>
+      <button type="button" role="tab" id="tabAdvice" aria-pressed="false" aria-selected="false">Conseils de travail</button>
+    </div>
+  </div></div>
+  <main class="main" id="main">
+    <div class="inner" id="ws"></div>
+  </main>
+</div>
+<div id="printRoot"></div>
+<div id="dlg" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+'use strict';
+const $ = (s, r) => (r || document).querySelector(s);
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v === false || v == null) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (v === true) el.setAttribute(k, '');
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : document.createTextNode(k));
+  return el;
+}
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2400);
+}
+
+/* ---------- constantes ---------- */
+const KEY = 'planning-revision-cpge-v1';
+const SUBJECTS = [
+  { key: 'maths',    name: 'Mathématiques',           short: 'Maths',    color: '#B7332A', bg: '#F9DDD9', dark: '#6E1D18', defCoeff: 5 },
+  { key: 'physique', name: 'Physique',                short: 'Physique', color: '#1E8449', bg: '#D5EDDB', dark: '#0F4A28', defCoeff: 5 },
+  { key: 'si',       name: 'Sciences de l’ingénieur', short: 'SI',       color: '#2C6FBB', bg: '#DCE9F7', dark: '#1A4573', defCoeff: 3 },
+  { key: 'francais', name: 'Français-Philosophie',    short: 'Français', color: '#A04000', bg: '#FCE3CE', dark: '#602700', defCoeff: 3 },
+  { key: 'langues',  name: 'Langues vivantes',        short: 'Langues',  color: '#117A65', bg: '#D0ECE7', dark: '#093F35', defCoeff: 2 },
+  { key: 'itc',      name: 'Informatique (ITC)',      short: 'ITC',      color: '#7D3C98', bg: '#E8D5F0', dark: '#4A2160', defCoeff: 2 }
+];
+const SUBJ_BY_KEY = Object.fromEntries(SUBJECTS.map(s => [s.key, s]));
+const SLOT_TIMES = ['08:30 – 10:30', '10:45 – 12:45', '13:45 – 15:45', '16:00 – 18:00'];
+const LUNCH_TIME = '12:45 – 13:45';
+const BLOCKS_PER_DAY = 4;
+const HOURS_PER_DAY = 8;
+const DAYS_FR = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const LEVEL_LABEL = { 1: 'à revoir', 2: 'en cours', 3: 'acquise' };
+
+/* ---------- persistance ---------- */
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+const S = (() => {
+  const s = lsGet(KEY, {});
+  const coeff = {};
+  SUBJECTS.forEach(x => { coeff[x.key] = typeof s.coeff?.[x.key] === 'number' ? s.coeff[x.key] : x.defCoeff; });
+  return {
+    tab: s.tab || 'plan',
+    coeff,
+    codes: s.codes || {},
+    weeks: typeof s.weeks === 'number' ? s.weeks : 4,
+    extra: typeof s.extra === 'number' ? s.extra : 0,
+    start: s.start || new Date().toISOString().slice(0, 10),
+    skipSunday: s.skipSunday !== false,
+    plan: null
+  };
+})();
+function save() {
+  lsSet(KEY, {
+    tab: S.tab, coeff: S.coeff, codes: S.codes,
+    weeks: S.weeks, extra: S.extra, start: S.start, skipSunday: S.skipSunday
+  });
+}
+
+/* ---------- parsing des codes ---------- */
+function parseCode(raw) {
+  if (!raw || !raw.trim()) return { r: {}, n: {}, empty: true };
+  try {
+    const o = JSON.parse(raw.trim());
+    if (!o || typeof o.r !== 'object' || o.r === null) return null;
+    const r = {};
+    for (const k in o.r) if ([1, 2, 3].includes(o.r[k])) r[k] = o.r[k];
+    return { r, n: o.n && typeof o.n === 'object' ? o.n : {} };
+  } catch (e) { return null; }
+}
+function subjectInfo(key) {
+  const code = S.codes[key] || '';
+  const parsed = parseCode(code);
+  const coeff = S.coeff[key] || 0;
+  return { key, code, parsed, coeff, valid: parsed !== null };
+}
+function prioritiesFor(parsed) {
+  if (!parsed || !parsed.r) return [];
+  const byLevel = { 1: [], 2: [], 3: [] };
+  Object.keys(parsed.r).sort().forEach(id => {
+    const l = parsed.r[id];
+    if (byLevel[l]) byLevel[l].push(id);
+  });
+  return [...byLevel[1], ...byLevel[2], ...byLevel[3]];
+}
+function countsFor(parsed) {
+  const c = { 1: 0, 2: 0, 3: 0, total: 0 };
+  if (!parsed || !parsed.r) return c;
+  for (const k in parsed.r) { c[parsed.r[k]]++; c.total++; }
+  return c;
+}
+
+/* ---------- rendu principal ---------- */
+function renderTabs() {
+  $('#tabPlan').setAttribute('aria-pressed', S.tab === 'plan' ? 'true' : 'false');
+  $('#tabPlan').setAttribute('aria-selected', S.tab === 'plan' ? 'true' : 'false');
+  $('#tabAdvice').setAttribute('aria-pressed', S.tab === 'advice' ? 'true' : 'false');
+  $('#tabAdvice').setAttribute('aria-selected', S.tab === 'advice' ? 'true' : 'false');
+}
+$('#tabPlan').addEventListener('click', () => { S.tab = 'plan'; save(); renderTabs(); renderWs(); });
+$('#tabAdvice').addEventListener('click', () => { S.tab = 'advice'; save(); renderTabs(); renderWs(); });
+
+function renderWs() {
+  const ws = $('#ws'); ws.innerHTML = '';
+  if (S.tab === 'plan') renderPlanTab(ws);
+  else renderAdviceTab(ws);
+}
+
+/* ---------- onglet Planning ---------- */
+function renderPlanTab(ws) {
+  ws.append(h('h2', null, 'Planning de révision'));
+
+  /* --- Section 1 : les matières --- */
+  const introSection = h('div', { class: 'section' },
+    h('h3', null, '1. Mes matières et leurs coefficients ', h('span', { class: 'badge' }, '6 matières')),
+    h('p', { class: 'lead', style: 'margin:0 0 10px;font-size:13px' },
+      'Collez le code de sauvegarde de chaque matière (bouton « Sauvegarde » de chaque page de suivi). ',
+      'Le coefficient sert à pondérer le temps de révision : ajustez-le selon le concours que vous visez ',
+      '(par exemple Maths 5, Physique 5, SI 3, Français 3, Langues 2, ITC 2 pour un concours classique ; ',
+      'montez Maths/Physique à 6 pour l’X, baissez SI à 2 pour les Mines-Ponts…).'),
+    h('div', { class: 'subjects-grid', id: 'subjectsGrid' })
+  );
+  ws.append(introSection);
+  const grid = $('#subjectsGrid');
+  SUBJECTS.forEach(sub => grid.append(subjectCard(sub)));
+
+  /* --- Section 2 : la période --- */
+  const periodSection = h('div', { class: 'section' },
+    h('h3', null, '2. La période de révision'),
+    h('div', { class: 'period-grid' },
+      h('label', null, 'Semaines complètes',
+        (() => {
+          const inp = h('input', { type: 'number', id: 'weeksIn', min: '0', max: '52', step: '1', value: String(S.weeks) });
+          inp.addEventListener('input', () => {
+            S.weeks = Math.max(0, Math.min(52, parseInt(inp.value) || 0));
+            save(); scheduleRegenerate();
+          });
+          return inp;
+        })()
+      ),
+      h('label', null, 'Jours en plus (semaine incomplète)',
+        (() => {
+          const inp = h('input', { type: 'number', id: 'extraIn', min: '0', max: '6', step: '1', value: String(S.extra) });
+          inp.addEventListener('input', () => {
+            S.extra = Math.max(0, Math.min(6, parseInt(inp.value) || 0));
+            save(); scheduleRegenerate();
+          });
+          return inp;
+        })()
+      ),
+      h('label', null, 'Date de début',
+        (() => {
+          const inp = h('input', { type: 'date', id: 'startIn', value: S.start });
+          inp.addEventListener('change', () => { S.start = inp.value || S.start; save(); scheduleRegenerate(); });
+          return inp;
+        })()
+      ),
+      h('label', { class: 'check' },
+        (() => {
+          const inp = h('input', { type: 'checkbox', id: 'skipSunIn' });
+          inp.checked = S.skipSunday;
+          inp.addEventListener('change', () => { S.skipSunday = inp.checked; save(); scheduleRegenerate(); });
+          return inp;
+        })(),
+        'Repos le dimanche'
+      )
+    ),
+    h('p', { class: 'lead', style: 'margin:10px 0 0;font-size:12.5px' },
+      'Chaque journée de travail comporte 4 blocs de 2 h (8 h de travail effectif) avec deux pauses de 15 min et un déjeuner d’une heure de 12 h 45 à 13 h 45.')
+  );
+  ws.append(periodSection);
+
+  /* --- Section 3 : bouton --- */
+  ws.append(h('div', { class: 'section', style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
+    h('button', { class: 'btn pri', type: 'button', onclick: () => { generate(); } }, 'Générer / mettre à jour le planning'),
+    h('button', { class: 'btn', type: 'button', onclick: () => resetAll() }, 'Tout effacer'),
+    h('span', { class: 'lead', style: 'font-size:12.5px;flex:1;min-width:180px;text-align:right' }, 'La mise à jour est aussi automatique quand vous modifiez un coefficient ou une durée.')
+  ));
+
+  /* --- Section 4 : plan --- */
+  const planSection = h('div', { id: 'planSection', style: 'margin-top:4px' });
+  ws.append(planSection);
+
+  /* Essai de restauration d’un plan existant */
+  if (S.plan) {
+    try { renderPlanIntoScreen(S.plan); } catch (e) { /* plan obsolète */ }
+  }
+}
+
+function subjectCard(sub) {
+  const info = subjectInfo(sub.key);
+  const card = h('div', { class: 'subj-card', 'data-subj': sub.key });
+  card.append(h('div', { class: 'subj-head', style: 'background:' + sub.color },
+    h('span', { class: 'dot' }),
+    sub.name
+  ));
+  const body = h('div', { class: 'subj-body' });
+  const coeffInput = h('input', { type: 'number', min: '0', max: '20', step: '0.5', value: String(S.coeff[sub.key] ?? sub.defCoeff), 'aria-label': 'Coefficient ' + sub.name });
+  coeffInput.addEventListener('input', () => {
+    const v = parseFloat(coeffInput.value);
+    S.coeff[sub.key] = isNaN(v) ? 0 : Math.max(0, v);
+    save(); scheduleRegenerate();
+  });
+  const status = h('span', { class: 'code-status' });
+  body.append(h('div', { class: 'subj-row' },
+    h('label', null, 'Coefficient'), coeffInput, status
+  ));
+  const ta = h('textarea', { placeholder: 'Collez ici le code de sauvegarde (bouton « Sauvegarde » de la page ' + sub.name + ')' });
+  ta.value = S.codes[sub.key] || '';
+  const stats = h('div', { class: 'subj-stats' });
+  function updateStatus() {
+    const info2 = subjectInfo(sub.key);
+    if (info2.parsed === null) {
+      status.textContent = 'Code invalide';
+      status.className = 'code-status bad';
+      ta.classList.add('bad');
+    } else if (info2.parsed.empty) {
+      status.textContent = 'Aucun code — révisions générales';
+      status.className = 'code-status';
+      ta.classList.remove('bad');
+    } else {
+      const c = countsFor(info2.parsed);
+      status.textContent = 'Code chargé';
+      status.className = 'code-status ok';
+      ta.classList.remove('bad');
+      stats.innerHTML = '';
+      stats.append(
+        h('span', { class: 'l1' }, 'À revoir : ', h('b', null, String(c[1]))),
+        h('span', { class: 'l2' }, 'En cours : ', h('b', null, String(c[2]))),
+        h('span', { class: 'l3' }, 'Acquises : ', h('b', null, String(c[3]))),
+        h('span', null, 'Total : ', h('b', null, String(c.total)))
+      );
+    }
+    if (info2.parsed?.empty) stats.innerHTML = '';
+  }
+  ta.addEventListener('input', () => {
+    S.codes[sub.key] = ta.value;
+    save(); updateStatus(); scheduleRegenerate();
+  });
+  body.append(ta, stats);
+  updateStatus();
+  card.append(body);
+  return card;
+}
+
+let regenTimer = null;
+function scheduleRegenerate() {
+  if (regenTimer) clearTimeout(regenTimer);
+  regenTimer = setTimeout(() => { if (S.plan) generate(true); }, 400);
+}
+
+/* ---------- génération du planning ---------- */
+function generate(silent) {
+  const subjects = SUBJECTS.map(s => subjectInfo(s.key));
+  const active = subjects.filter(s => (S.coeff[s.key] || 0) > 0);
+  const totalWeight = active.reduce((a, s) => a + (S.coeff[s.key] || 0), 0);
+  const totalCalendarDays = (S.weeks || 0) * 7 + (S.extra || 0);
+
+  if (totalCalendarDays <= 0) { if (!silent) toast('Renseignez au moins une semaine ou un jour.'); return; }
+  if (totalWeight <= 0) { if (!silent) toast('Renseignez au moins un coefficient > 0.'); return; }
+
+  /* construire les jours calendaires */
+  const start = parseDateInput(S.start);
+  const days = [];
+  for (let i = 0; i < totalCalendarDays; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const off = S.skipSunday && d.getDay() === 0;
+    days.push({ date: d, off });
+  }
+  const activeDays = days.filter(d => !d.off);
+  const totalBlocks = activeDays.length * BLOCKS_PER_DAY;
+
+  /* allouer les blocs selon les coefficients */
+  const alloc = active.map(s => {
+    const w = S.coeff[s.key];
+    const exact = w / totalWeight * totalBlocks;
+    return { subject: s, coeff: w, exact, floor: Math.floor(exact) };
+  });
+  let sumFloor = alloc.reduce((a, x) => a + x.floor, 0);
+  let remainder = totalBlocks - sumFloor;
+  alloc.sort((a, b) => (b.exact - b.floor) - (a.exact - a.floor));
+  for (let i = 0; i < remainder && alloc.length; i++) alloc[i % alloc.length].floor++;
+  alloc.forEach(a => { a.blocks = a.floor; });
+  alloc.sort((a, b) => SUBJECTS.findIndex(s => s.key === a.subject.key) - SUBJECTS.findIndex(s => s.key === b.subject.key));
+
+  /* construire la file de contenus par matière */
+  const queues = alloc.map(a => {
+    const prios = prioritiesFor(a.subject.parsed);
+    const items = [];
+    if (a.blocks > 0) {
+      if (prios.length === 0) {
+        for (let i = 0; i < a.blocks; i++) items.push({ id: null, label: 'Révisions générales', level: null });
+      } else {
+        for (let i = 0; i < a.blocks; i++) {
+          const id = prios[i % prios.length];
+          const level = a.subject.parsed.r[id];
+          items.push({ id, label: id, level });
+        }
+      }
+    }
+    return { subject: a.subject, items, used: 0 };
+  });
+
+  /* répartir les blocs dans les jours actifs */
+  const dayList = [];
+  let lastSubjKey = null;
+  let activeIdx = 0;
+  for (const day of days) {
+    if (day.off) {
+      dayList.push({ date: day.date, off: true, slots: [] });
+      continue;
+    }
+    const slots = [];
+    for (let b = 0; b < BLOCKS_PER_DAY; b++) {
+      /* choisir la matière : plus de blocs restants, avec pénalité si c’est la même que le créneau précédent */
+      let best = null, bestScore = -Infinity;
+      for (const q of queues) {
+        const remaining = q.items.length - q.used;
+        if (remaining <= 0) continue;
+        let score = remaining;
+        if (lastSubjKey && q.subject.key === lastSubjKey) score -= 2.5;
+        if (score > bestScore) { bestScore = score; best = q; }
+      }
+      if (!best) {
+        /* plus aucun bloc : on remplit quand même le créneau pour la forme */
+        break;
+      }
+      const item = best.items[best.used];
+      best.used++;
+      slots.push({ subject: best.subject, content: item });
+      lastSubjKey = best.subject.key;
+    }
+    dayList.push({ date: day.date, off: false, slots });
+    activeIdx++;
+  }
+
+  const plan = {
+    start: start, end: days.length ? days[days.length - 1].date : start,
+    totalCalendarDays: days.length,
+    workingDays: activeDays.length,
+    totalBlocks: activeDays.length * BLOCKS_PER_DAY,
+    hoursPerSubject: alloc.map(a => ({ key: a.subject.key, blocks: a.blocks, hours: a.blocks * 2 })),
+    subjects: active,
+    dayList,
+    coeff: { ...S.coeff },
+    generatedAt: new Date()
+  };
+  S.plan = plan;
+  renderPlanIntoScreen(plan);
+  renderPlanIntoPrint(plan);
+  $('#bPrint').disabled = false;
+  if (!silent) toast('Planning généré');
+}
+
+function parseDateInput(str) {
+  if (!str) return new Date();
+  const parts = str.split('-').map(Number);
+  if (parts.length === 3) return new Date(parts[0], parts[1] - 1, parts[2]);
+  return new Date();
+}
+
+function fmtLong(d) {
+  return DAYS_FR[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS_FR[d.getMonth()] + ' ' + d.getFullYear();
+}
+function fmtShort(d) {
+  return d.getDate() + ' ' + MONTHS_FR[d.getMonth()];
+}
+
+/* ---------- rendu du plan à l’écran ---------- */
+function renderPlanIntoScreen(plan) {
+  const container = $('#planSection');
+  if (!container) return;
+  container.innerHTML = '';
+  const sec = h('div', { class: 'section' });
+  sec.append(h('h3', null, '3. Mon planning'));
+
+  /* résumé */
+  const totalH = plan.totalBlocks * 2;
+  const summary = h('div', { class: 'plan-summary' },
+    statBox('Période', fmtShort(plan.start) + ' → ' + fmtShort(plan.end)),
+    statBox('Jours travaillés', String(plan.workingDays)),
+    statBox('Total', totalH + ' h')
+  );
+  sec.append(summary);
+
+  /* répartition par matière */
+  const subjTable = h('table', { class: 'subj-tbl', style: 'width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px' });
+  subjTable.append(h('thead', null,
+    h('tr', null,
+      h('th', { style: 'text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)' }, 'Matière'),
+      h('th', { style: 'text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)' }, 'Coeff.'),
+      h('th', { style: 'text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)' }, 'Blocs'),
+      h('th', { style: 'text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)' }, 'Heures'),
+      h('th', { style: 'text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)' }, 'Priorités')
+    )
+  ));
+  const tb = h('tbody');
+  plan.hoursPerSubject.forEach(hs => {
+    const sub = SUBJ_BY_KEY[hs.key];
+    if (!sub) return;
+    const info = subjectInfo(sub.key);
+    const prioCount = prioritiesFor(info.parsed).length;
+    const coeff = plan.coeff[sub.key] || 0;
+    tb.append(h('tr', null,
+      h('td', { style: 'padding:5px 8px;border-bottom:1px solid var(--line)' },
+        h('span', { style: 'display:inline-block;width:10px;height:10px;border-radius:2px;background:' + sub.color + ';margin-right:6px;vertical-align:-1px' }),
+        sub.name),
+      h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, String(coeff)),
+      h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, String(hs.blocks)),
+      h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, hs.hours + ' h'),
+      h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono);font-size:12px;color:var(--muted)' }, prioCount ? String(prioCount) : '—')
+    ));
+  });
+  subjTable.append(tb);
+  sec.append(subjTable);
+
+  /* légende */
+  const legend = h('div', { class: 'legend' });
+  plan.hoursPerSubject.forEach(hs => {
+    const sub = SUBJ_BY_KEY[hs.key];
+    if (!sub || hs.blocks === 0) return;
+    legend.append(h('span', null, h('i', { style: 'background:' + sub.color }), sub.short));
+  });
+  sec.append(legend);
+
+  /* jours */
+  const days = h('div', { class: 'plan-days' });
+  let idx = 0;
+  plan.dayList.forEach(day => {
+    if (day.off) {
+      days.append(h('div', { class: 'plan-day off' },
+        h('div', { class: 'day-header' }, h('span', null, 'Repos'), h('span', { class: 'date' }, fmtLong(day.date))),
+        h('div', { class: 'day-body' }, 'Jour de repos conseillé — profitez-en pour récupérer.')
+      ));
+      return;
+    }
+    idx++;
+    const dd = h('div', { class: 'plan-day' });
+    dd.append(h('div', { class: 'day-header' },
+      h('span', null, 'Jour ' + idx),
+      h('span', { class: 'date' }, fmtLong(day.date))
+    ));
+    const body = h('div');
+    /* slots avec lunch inséré après le 2e */
+    const order = [0, 1, 'lunch', 2, 3];
+    order.forEach(o => {
+      if (o === 'lunch') {
+        body.append(h('div', { class: 'slot lunch' }, h('span', { class: 'time' }, LUNCH_TIME), 'Déjeuner'));
+        return;
+      }
+      const slot = day.slots[o];
+      if (!slot) return;
+      const sub = slot.subject;
+      const level = slot.content.level;
+      const levelTxt = level ? ' · ' + LEVEL_LABEL[level] : '';
+      body.append(h('div', { class: 'slot', style: 'border-left-color:' + sub.color + ';background:' + sub.bg },
+        h('span', { class: 'time' }, SLOT_TIMES[o]),
+        h('span', { class: 'subj', style: 'color:' + sub.dark }, sub.short),
+        h('span', { class: 'cont', style: 'color:' + sub.dark },
+          (slot.content.label || 'Révisions générales') + levelTxt)
+      ));
+    });
+    dd.append(body);
+    days.append(dd);
+  });
+  sec.append(days);
+
+  /* bouton export */
+  sec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px' },
+    h('button', { class: 'btn pri', type: 'button', onclick: () => $('#bPrint').click() }, 'Exporter en PDF'),
+    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Utilisez « Enregistrer au format PDF » dans la boîte d’impression.')
+  ));
+
+  container.append(sec);
+}
+
+function statBox(label, val) {
+  return h('div', { class: 'pstat' },
+    h('div', { class: 'lbl' }, label),
+    h('div', { class: 'val' }, val)
+  );
+}
+
+/* ---------- rendu pour l’impression ---------- */
+function renderPlanIntoPrint(plan) {
+  const root = $('#printRoot');
+  if (!root) return;
+  const totalH = plan.totalBlocks * 2;
+  const legendItems = plan.hoursPerSubject
+    .filter(hs => hs.blocks > 0)
+    .map(hs => {
+      const sub = SUBJ_BY_KEY[hs.key];
+      return '<span><i style="background:' + sub.color + '"></i>' + sub.name + '</span>';
+    }).join('');
+
+  let daysHTML = '';
+  let idx = 0;
+  plan.dayList.forEach(day => {
+    if (day.off) {
+      daysHTML += '<div class="plan-day off"><div class="day-header"><span>Repos</span><span class="date">' + fmtLong(day.date) + '</span></div><div class="day-body">Jour de repos conseillé.</div></div>';
+      return;
+    }
+    idx++;
+    let bodyHTML = '';
+    const order = [0, 1, 'lunch', 2, 3];
+    order.forEach(o => {
+      if (o === 'lunch') {
+        bodyHTML += '<div class="slot lunch"><span class="time">' + LUNCH_TIME + '</span>Déjeuner</div>';
+        return;
+      }
+      const slot = day.slots[o];
+      if (!slot) return;
+      const sub = slot.subject;
+      const level = slot.content.level;
+      const levelTxt = level ? ' · ' + LEVEL_LABEL[level] : '';
+      bodyHTML += '<div class="slot" style="border-left-color:' + sub.color + ';background:' + sub.bg + '">'
+        + '<span class="time">' + SLOT_TIMES[o] + '</span>'
+        + '<span class="subj" style="color:' + sub.dark + '">' + sub.short + '</span>'
+        + '<span class="cont" style="color:' + sub.dark + '">' + (slot.content.label || 'Révisions générales') + levelTxt + '</span>'
+        + '</div>';
+    });
+    daysHTML += '<div class="plan-day"><div class="day-header"><span>Jour ' + idx + '</span><span class="date">' + fmtLong(day.date) + '</span></div>' + bodyHTML + '</div>';
+  });
+
+  let subjTbl = '<table class="subj-tbl"><thead><tr><th>Matière</th><th>Coeff.</th><th>Blocs</th><th>Heures</th></tr></thead><tbody>';
+  plan.hoursPerSubject.forEach(hs => {
+    const sub = SUBJ_BY_KEY[hs.key];
+    if (!sub) return;
+    subjTbl += '<tr><td>' + sub.name + '</td><td style="text-align:right">' + (plan.coeff[sub.key] || 0) + '</td><td style="text-align:right">' + hs.blocks + '</td><td style="text-align:right">' + hs.hours + ' h</td></tr>';
+  });
+  subjTbl += '</tbody></table>';
+
+  root.innerHTML =
+    '<h1>Planning de révision</h1>'
+    + '<div class="plan-meta">Du ' + fmtLong(plan.start) + ' au ' + fmtLong(plan.end)
+      + ' · ' + plan.workingDays + ' jours travaillés · ' + totalH + ' h de révision</div>'
+    + '<div class="plan-summary">'
+      + '<div class="pstat"><div class="lbl">Jours travaillés</div><div class="val">' + plan.workingDays + '</div></div>'
+      + '<div class="pstat"><div class="lbl">Blocs de 2 h</div><div class="val">' + plan.totalBlocks + '</div></div>'
+      + '<div class="pstat"><div class="lbl">Volume total</div><div class="val">' + totalH + ' h</div></div>'
+    + '</div>'
+    + '<div class="legend">' + legendItems + '</div>'
+    + subjTbl
+    + '<div class="plan-days">' + daysHTML + '</div>'
+    + '<p style="margin-top:6mm;font-size:8pt;color:#666">Chaque journée : 4 blocs de 2 h (08:30–10:30, 10:45–12:45, 13:45–15:45, 16:00–18:00), pause de 15 min entre les blocs du matin et de l’après-midi, déjeuner de 12 h 45 à 13 h 45.</p>';
+}
+
+/* ---------- reset ---------- */
+function resetAll() {
+  openDlg('Tout effacer',
+    h('div', null,
+      h('p', null, 'Cette action efface tous les coefficients et tous les codes de sauvegarde saisis dans cette page. Les codes sont conservés sur les pages de suivi de chaque matière ; vous pourrez les recoller.'),
+      h('div', { style: 'display:flex;gap:8px;justify-content:flex-end;margin-top:12px' },
+        h('button', { class: 'btn', type: 'button', onclick: closeDlg }, 'Annuler'),
+        h('button', { class: 'btn pri', type: 'button', onclick: () => {
+          S.codes = {};
+          SUBJECTS.forEach(s => { S.coeff[s.key] = s.defCoeff; });
+          S.weeks = 4; S.extra = 0;
+          S.start = new Date().toISOString().slice(0, 10);
+          S.skipSunday = true; S.plan = null;
+          save(); closeDlg(); renderWs(); $('#bPrint').disabled = true; $('#printRoot').innerHTML = '';
+          toast('Page réinitialisée');
+        } }, 'Tout effacer')
+      )
+    )
+  );
+}
+
+/* ---------- onglet Conseils de travail ---------- */
+function renderAdviceTab(ws) {
+  ws.append(h('h2', null, 'Conseils de travail'));
+
+  ws.append(h('div', { class: 'section' },
+    h('p', { class: 'lead', style: 'margin:0;font-size:14px' },
+      'Les méthodes ci-dessous sont celles qui font la différence entre une révision passive (relire) ',
+      'et une révision active (récupérer, expliquer, s’entraîner). Vous n’avez pas besoin de toutes les ',
+      'utiliser — choisissez-en deux ou trois et tenez-les sur la durée.')
+  ));
+
+  ws.append(h('div', { class: 'advice-toc' },
+    h('b', null, 'Au sommaire'),
+    h('ol', null,
+      h('li', null, 'La feuille blanche (active recall)'),
+      h('li', null, 'La répétition espacée'),
+      h('li', null, 'L’alternance des matières'),
+      h('li', null, 'La méthode Feynman'),
+      h('li', null, 'Le carnet d’erreurs'),
+      h('li', null, 'Les annales en conditions réelles'),
+      h('li', null, 'Les cycles de travail (Pomodoro adapté)'),
+      h('li', null, 'Sommeil, sport, alimentation'),
+      h('li', null, 'Préparation mentale'),
+      h('li', null, 'Que faire des compétences acquises ?')
+    )
+  ));
+
+  adviceCard(ws, '🧠', 'La feuille blanche (active recall)', [
+    'Après avoir lu un chapitre ou une fiche, prenez une feuille blanche et notez de mémoire tout ce dont vous vous souvenez : définitions, théorèmes, démonstrations, formules, schémas, exemples.',
+    'Comparez ensuite votre production avec le cours. Repérez les oublis et les erreurs, puis comblez les manques à partir du cours.',
+    'Refaites l’exercice quelques jours plus tard (J+1, J+3, J+7, J+21). Chaque rappel actif consolide la mémoire bien plus efficacement qu’une relecture passive.'
+  ], 'C’est la méthode la plus rentable qui existe. Trente minutes de feuille blanche valent deux heures de relecture.');
+
+  adviceCard(ws, '⏳', 'La répétition espacée', [
+    'Ne révisez pas la même notion plusieurs fois de suite : espacez les révisions.',
+    'Rythme suggéré : J+1 (le lendemain), J+3, J+7 (une semaine), J+21 (trois semaines), puis une fois par mois.',
+    'Le logiciel Anki (gratuit, flashcards) automatise ce rythme et est utilisé par la plupart des étudiants en médecine et en CPGE. Un jeu de 200 à 400 cartes bien fait suffit pour tout le programme.'
+  ], 'La courbe de l’oubli d’Ebbinghaus montre que sans révision, on oublie 70 % d’une information en 24 h. La répétition espacée neutralise cette courbe.');
+
+  adviceCard(ws, '🔀', 'L’alternance des matières (interleaving)', [
+    'Plutôt que de bloquer trois heures sur la même matière, alternez les disciplines dans la journée et dans la semaine.',
+    'Votre cerveau apprend mieux quand il doit différencier les notions. Ce planning est déjà construit pour alterner automatiquement les matières.'
+  ], 'L’alternance augmente légèrement la difficulté ressentie, mais améliore fortement la rétention à long terme et la capacité à choisir la bonne méthode face à un problème nouveau.');
+
+  adviceCard(ws, '🎓', 'La méthode Feynman', [
+    'Prenez une notion et expliquez-la à voix haute, comme si vous l’enseigniez à un camarade ou à un plus jeune.',
+    'Dès que vous butez, revenez au cours : vous venez d’identifier une zone floue.',
+    'Simplifiez le vocabulaire, donnez des exemples, utilisez des analogies. Si vous ne pouvez pas expliquer simplement, c’est que vous n’avez pas encore compris.'
+  ], 'Cette méthode oblige à traiter l’information en profondeur. Elle est particulièrement efficace pour les démonstrations et les concepts abstraits.');
+
+  adviceCard(ws, '📓', 'Le carnet d’erreurs', [
+    'Tenez un carnet (ou un fichier) où vous notez chaque erreur significative : erreur de calcul, de raisonnement, de méthode, de rédaction.',
+    'Pour chaque erreur, écrivez : ce que vous avez fait, ce qu’il fallait faire, et la règle à retenir.',
+    'Relisez le carnet avant chaque DS et chaque concours blanc. C’est votre meilleur outil de progrès personnalisé.'
+  ], 'Les concours testent souvent les mêmes pièges. Un étudiant qui supprime 80 % de ses erreurs récurrentes gagne plusieurs points de moyenne.');
+
+  adviceCard(ws, '📝', 'Les annales en conditions réelles', [
+    'Les concours sont exigeants en rapidité : 4 h pour un sujet de maths, 4 h pour la physique, etc.',
+    'Faites régulièrement des sujets en temps limité, sans interruption, dans les conditions du concours (même horaire, même matériel, pas de téléphone).',
+    'Corrigez ensuite sérieusement, en notant les points perdus et leurs causes. C’est la correction qui fait progresser, pas le sujet lui-même.'
+  ], 'Un sujet d’annales travaillé en conditions réelles vaut trois sujets faits à moitié en mode détendu.');
+
+  adviceCard(ws, '🍅', 'Les cycles de travail (Pomodoro adapté)', [
+    'Travaillez par blocs de 2 h (comme dans ce planning), avec de courtes pauses de 15 min.',
+    'Pendant un bloc, une seule tâche, pas de téléphone, pas d’onglet ouvert inutilement.',
+    'Le cerveau reste efficace plus longtemps avec des sessions courtes et intenses qu’avec des marathons de 5 heures.',
+    'La pause n’est pas une récompense : c’est un moment où le cerveau consolide ce qu’il vient d’apprendre.'
+  ], 'Si vous avez du mal à démarrer, engagez-vous sur 10 minutes seulement. La motivation vient en faisant, pas avant.');
+
+  adviceCard(ws, '😴', 'Sommeil, sport, alimentation', [
+    'Dormez 7 à 8 h par nuit, à horaires réguliers. La mémoire se consolide pendant le sommeil profond et paradoxal.',
+    'Faites 20 à 30 min de sport par jour : marche rapide, course, vélo, natation. Un cerveau oxygéné apprend mieux.',
+    'Mangez équilibré, évitez les gros pics de sucre (sodas, viennoiseries) qui provoquent des coups de barre.',
+    'Hydratez-vous régulièrement. Une déshydratation même légère fait chuter l’attention.'
+  ], 'Le sommeil n’est pas du temps perdu : c’est le moment où le cerveau range et consolide. Une nuit blanche avant un DS est presque toujours une mauvaise idée.');
+
+  adviceCard(ws, '🧘', 'Préparation mentale', [
+    'Acceptez de ne pas tout maîtriser. Concentrez-vous sur ce qui est faisable et prioritaire.',
+    'La confiance vient de la régularité, pas d’un état de grâce ponctuel.',
+    'Ne vous comparez pas aux autres : comparez-vous à vous-même d’il y a une semaine.',
+    'Le jour du concours, vous serez jugé sur ce que vous savez faire, pas sur ce que vous ne savez pas. Maximisez les points faciles avant de chercher les questions difficiles.'
+  ], 'Une préparation régulière de 3 h par jour sur plusieurs mois vaut mieux que des journées de 12 h suivies d’épuisement.');
+
+  adviceCard(ws, '✅', 'Que faire des compétences acquises ?', [
+    'Ne les abandonnez pas complètement : une compétence « acquise » non entretenue redevient vite « à revoir ».',
+    'Prévoyez une session de révision rapide (30 min) toutes les deux semaines environ.',
+    'Utilisez les flashcards (Anki) pour ces rappels d’entretien : quelques minutes par jour suffisent.',
+    'Les compétences « à revoir » restent prioritaires dans ce planning : elles sont placées en premier dans chaque matière.'
+  ], 'La règle d’or : mieux vaut couvrir 80 % du programme avec une révision régulière que 100 % une seule fois.');
+
+  ws.append(h('div', { class: 'section' },
+    h('h3', null, 'Comment utiliser ce planning'),
+    h('ul', { style: 'margin:6px 0 0;padding-left:22px;font-size:13.5px;line-height:1.55' },
+      h('li', null, 'Chaque bloc de 2 h correspond à une compétence précise. Travaillez-la en profondeur : cours, exercices, puis feuille blanche.'),
+      h('li', null, 'Les compétences « à revoir » passent en priorité. Si un bloc tombe sur une compétence que vous maîtrisez soudainement, avancez sur la suivante de la même matière.'),
+      h('li', null, 'Le planning est une indication, pas une prison. Si vous débordez, ajustez — mais gardez la régularité.'),
+      h('li', null, 'Réévaluez vos compétences sur les pages de suivi toutes les deux semaines environ, puis régénérez le planning (les coefficients restent).')
+    )
+  ));
+}
+
+function adviceCard(ws, emoji, title, paragraphs, tip) {
+  const card = h('div', { class: 'advice-card' },
+    h('h3', null, emoji + ' ' + title)
+  );
+  paragraphs.forEach(p => card.append(h('p', null, p)));
+  if (tip) card.append(h('div', { class: 'tip' }, '💡 ' + tip));
+  ws.append(card);
+}
+
+/* ---------- impression ---------- */
+$('#bPrint').addEventListener('click', () => {
+  if (!S.plan) return;
+  renderPlanIntoPrint(S.plan);
+  setTimeout(() => window.print(), 50);
+});
+
+/* ---------- thème ---------- */
+function applyTheme(t) {
+  const r = document.documentElement;
+  if (t === 'dark') r.setAttribute('data-theme', 'dark'); else r.setAttribute('data-theme', 'light');
+  const b = $('#bTheme'); if (b) { b.textContent = t === 'dark' ? 'Mode clair' : 'Mode sombre'; b.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false'); }
+}
+(function () {
+  let t = 'light';
+  try { if (localStorage.getItem(KEY + '-theme') === 'dark') t = 'dark'; } catch (e) {}
+  applyTheme(t);
+})();
+$('#bTheme').addEventListener('click', () => {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(t);
+  try { localStorage.setItem(KEY + '-theme', t); } catch (e) {}
+});
+
+/* ---------- dlg ---------- */
+function closeDlg() { $('#dlg').hidden = true; $('#dlg').innerHTML = ''; }
+function openDlg(title, body) {
+  const d = $('#dlg'); d.innerHTML = ''; d.hidden = false;
+  d.append(h('div', { class: 'dlgbox', role: 'dialog', 'aria-label': title },
+    h('header', null, h('b', null, title), h('button', { class: 'btn sm', type: 'button', onclick: closeDlg }, 'Fermer')),
+    h('div', { class: 'dbody' }, body)));
+  d.onclick = ev => { if (ev.target === d) closeDlg(); };
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dlg').hidden) closeDlg(); });
+
+/* ---------- init ---------- */
+renderTabs();
+renderWs();
+</script>
+</body>
+</html>

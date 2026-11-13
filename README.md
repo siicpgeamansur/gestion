@@ -10,6 +10,9 @@ Voici une page regroupant l'ensemble des compétences à acquérir au cours de l
 
 [Compétences ITC CPGE](https://siicpgeamansur.github.io/gestion/competences_itc.html)
 
+[Compétences LVA CPGE](https://siicpgeamansur.github.io/gestion/competences_LVA.html)
+
+[Compétences Français/Philosopie CPGE](https://siicpgeamansur.github.io/gestion/competences_FrPhilo.html)
 
 Voici une tentative de créer un colloscope à partir de contraintes de salles, de colleurs, ... :
 

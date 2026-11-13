@@ -60,16 +60,22 @@ button,input,select,textarea{font:inherit;color:inherit}
 .dlgbox .dbody{padding:14px 16px;overflow:auto}
 .dlgbox p,.dlgbox li{margin:4px 0;font-size:13.5px}
 
-/* --- section card --- */
 .section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
 .section h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:8px}
 .section h3 .badge{font:500 11px var(--font-mono);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 7px;color:var(--muted)}
 
-/* --- subject cards --- */
+/* concours */
+.exam-chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.exam-chip{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 13px;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.exam-chip:hover{border-color:var(--accent)}
+.exam-chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.exam-chip .dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.85}
+.exam-note{font-size:12.5px;color:var(--muted);margin:0 0 4px}
+
 .subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
 .subj-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .subj-head{display:flex;align-items:center;gap:8px;padding:9px 12px;color:#fff;font-weight:600}
-.subj-head .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 0 0 2px rgba(0,0,0,.08) inset}
+.subj-head .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.85)}
 .subj-body{padding:10px 12px}
 .subj-row{display:flex;gap:10px;align-items:center;margin-bottom:8px}
 .subj-row label{font-size:12.5px;color:var(--muted);flex:none}
@@ -85,14 +91,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .subj-stats .l2 b{color:var(--warn)}
 .subj-stats .l3 b{color:var(--ok)}
 
-/* --- period --- */
 .period-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 18px;align-items:end}
 .period-grid label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
 .period-grid input{background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
 .period-grid .check{flex-direction:row;align-items:center;gap:8px;color:var(--fg);font-size:13px}
 .period-grid .check input{width:auto}
 
-/* --- plan display --- */
 .plan-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0 16px}
 .pstat{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel)}
 .pstat .lbl{font-size:11.5px;color:var(--muted)}
@@ -116,7 +120,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px}
 
-/* --- advice --- */
 .advice-toc{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0 18px;font-size:13.5px}
 .advice-toc b{display:block;margin-bottom:4px}
 .advice-toc ol{margin:0;padding-left:20px}
@@ -128,7 +131,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .advice-card li{margin:3px 0;font-size:13.5px;line-height:1.5}
 .advice-card .tip{background:var(--accent-soft);color:var(--accent-ink);border-radius:6px;padding:8px 12px;font-size:13px;margin-top:8px}
 
-/* --- print --- */
 #printRoot{display:none}
 
 @media (max-width:820px){
@@ -216,20 +218,33 @@ function toast(msg) {
 }
 
 /* ---------- constantes ---------- */
-const KEY = 'planning-revision-cpge-v1';
+const KEY = 'planning-revision-cpge-v2';
 const SUBJECTS = [
-  { key: 'maths',    name: 'Mathématiques',           short: 'Maths',    color: '#B7332A', bg: '#F9DDD9', dark: '#6E1D18', defCoeff: 5 },
-  { key: 'physique', name: 'Physique',                short: 'Physique', color: '#1E8449', bg: '#D5EDDB', dark: '#0F4A28', defCoeff: 5 },
-  { key: 'si',       name: 'Sciences de l’ingénieur', short: 'SI',       color: '#2C6FBB', bg: '#DCE9F7', dark: '#1A4573', defCoeff: 3 },
-  { key: 'francais', name: 'Français-Philosophie',    short: 'Français', color: '#A04000', bg: '#FCE3CE', dark: '#602700', defCoeff: 3 },
-  { key: 'langues',  name: 'Langues vivantes',        short: 'Langues',  color: '#117A65', bg: '#D0ECE7', dark: '#093F35', defCoeff: 2 },
-  { key: 'itc',      name: 'Informatique (ITC)',      short: 'ITC',      color: '#7D3C98', bg: '#E8D5F0', dark: '#4A2160', defCoeff: 2 }
+  { key: 'maths',    name: 'Mathématiques',           short: 'Maths',    color: '#B7332A', bg: '#F9DDD9', dark: '#6E1D18', defCoeff: 1 },
+  { key: 'physique', name: 'Physique',                short: 'Physique', color: '#1E8449', bg: '#D5EDDB', dark: '#0F4A28', defCoeff: 1 },
+  { key: 'si',       name: 'Sciences de l’ingénieur', short: 'SI',       color: '#2C6FBB', bg: '#DCE9F7', dark: '#1A4573', defCoeff: 1 },
+  { key: 'francais', name: 'Français-Philosophie',    short: 'Français', color: '#A04000', bg: '#FCE3CE', dark: '#602700', defCoeff: 1 },
+  { key: 'langues',  name: 'Langues vivantes',        short: 'Langues',  color: '#117A65', bg: '#D0ECE7', dark: '#093F35', defCoeff: 1 },
+  { key: 'itc',      name: 'Informatique (ITC)',      short: 'ITC',      color: '#7D3C98', bg: '#E8D5F0', dark: '#4A2160', defCoeff: 1 }
 ];
 const SUBJ_BY_KEY = Object.fromEntries(SUBJECTS.map(s => [s.key, s]));
+
+/* Coefficients par concours, filière PSI, session 2025-2026.
+   Sources : notices et tableaux publics des concours (Centrale-Supélec 2026,
+   Mines-Ponts arrêté 2015 modifié, X-ENS banque commune, CCINP 2026,
+   Mines-Télécom 2026). Valeurs arrondies, modifiables par l’élève. */
+const EXAM_COEFFS = {
+  'Centrale-Supélec': { maths: 26, physique: 32, si: 12, francais: 19, langues: 11, itc: 0 },
+  'Mines-Ponts':      { maths: 9,  physique: 10, si: 8,  francais: 8,  langues: 2,  itc: 1 },
+  'X-ENS':            { maths: 15, physique: 12, si: 8,  francais: 6,  langues: 6,  itc: 4 },
+  'CCINP':            { maths: 24, physique: 24, si: 12, francais: 9,  langues: 5,  itc: 0 },
+  'Mines-Télécom':    { maths: 9,  physique: 16, si: 8,  francais: 5,  langues: 4,  itc: 0 }
+};
+const EXAM_LIST = Object.keys(EXAM_COEFFS);
+
 const SLOT_TIMES = ['08:30 – 10:30', '10:45 – 12:45', '13:45 – 15:45', '16:00 – 18:00'];
 const LUNCH_TIME = '12:45 – 13:45';
 const BLOCKS_PER_DAY = 4;
-const HOURS_PER_DAY = 8;
 const DAYS_FR = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 const LEVEL_LABEL = { 1: 'à revoir', 2: 'en cours', 3: 'acquise' };
@@ -241,9 +256,10 @@ function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch
 const S = (() => {
   const s = lsGet(KEY, {});
   const coeff = {};
-  SUBJECTS.forEach(x => { coeff[x.key] = typeof s.coeff?.[x.key] === 'number' ? s.coeff[x.key] : x.defCoeff; });
+  SUBJECTS.forEach(x => { coeff[x.key] = typeof s.coeff?.[x.key] === 'number' ? s.coeff[x.key] : 1; });
   return {
     tab: s.tab || 'plan',
+    activeExam: s.activeExam || null,
     coeff,
     codes: s.codes || {},
     weeks: typeof s.weeks === 'number' ? s.weeks : 4,
@@ -255,7 +271,7 @@ const S = (() => {
 })();
 function save() {
   lsSet(KEY, {
-    tab: S.tab, coeff: S.coeff, codes: S.codes,
+    tab: S.tab, activeExam: S.activeExam, coeff: S.coeff, codes: S.codes,
     weeks: S.weeks, extra: S.extra, start: S.start, skipSunday: S.skipSunday
   });
 }
@@ -293,7 +309,7 @@ function countsFor(parsed) {
   return c;
 }
 
-/* ---------- rendu principal ---------- */
+/* ---------- onglets ---------- */
 function renderTabs() {
   $('#tabPlan').setAttribute('aria-pressed', S.tab === 'plan' ? 'true' : 'false');
   $('#tabPlan').setAttribute('aria-selected', S.tab === 'plan' ? 'true' : 'false');
@@ -313,54 +329,78 @@ function renderWs() {
 function renderPlanTab(ws) {
   ws.append(h('h2', null, 'Planning de révision'));
 
-  /* --- Section 1 : les matières --- */
-  const introSection = h('div', { class: 'section' },
-    h('h3', null, '1. Mes matières et leurs coefficients ', h('span', { class: 'badge' }, '6 matières')),
+  /* --- Section 1 : choix du concours --- */
+  const examSection = h('div', { class: 'section' },
+    h('h3', null, '1. Mon concours cible ', h('span', { class: 'badge' }, 'coefficients par défaut')),
+    h('p', { class: 'exam-note' },
+      'Choisissez un concours pour préremplir les coefficients selon la grille officielle (filière PSI, session 2025-2026). ',
+      'Vous pouvez ensuite ajuster chaque coefficient avec les flèches de la carte matière : le bouton n’est qu’un point de départ.'
+    ),
+    h('div', { class: 'exam-chips', id: 'examChips', role: 'group', 'aria-label': 'Concours' })
+  );
+  ws.append(examSection);
+  const chips = $('#examChips');
+  EXAM_LIST.forEach(name => {
+    const pressed = S.activeExam === name;
+    const b = h('button', {
+      type: 'button', class: 'exam-chip',
+      'aria-pressed': pressed ? 'true' : 'false',
+      onclick: () => applyExam(name)
+    }, h('span', { class: 'dot' }), name);
+    chips.append(b);
+  });
+  /* bouton "aucun / valeurs par défaut" */
+  const resetChip = h('button', {
+    type: 'button', class: 'exam-chip',
+    'aria-pressed': S.activeExam === null ? 'true' : 'false',
+    onclick: () => {
+      S.activeExam = null;
+      SUBJECTS.forEach(s => { S.coeff[s.key] = 1; });
+      save(); renderWs(); toast('Coefficients remis à 1');
+    }
+  }, 'Aucun (tout à 1)');
+  chips.append(resetChip);
+
+  /* --- Section 2 : matières --- */
+  const subjSection = h('div', { class: 'section' },
+    h('h3', null, '2. Mes matières et leurs coefficients ', h('span', { class: 'badge' }, '6 matières')),
     h('p', { class: 'lead', style: 'margin:0 0 10px;font-size:13px' },
       'Collez le code de sauvegarde de chaque matière (bouton « Sauvegarde » de chaque page de suivi). ',
-      'Le coefficient sert à pondérer le temps de révision : ajustez-le selon le concours que vous visez ',
-      '(par exemple Maths 5, Physique 5, SI 3, Français 3, Langues 2, ITC 2 pour un concours classique ; ',
-      'montez Maths/Physique à 6 pour l’X, baissez SI à 2 pour les Mines-Ponts…).'),
+      'Le coefficient pondère le temps de révision : 0 retire la matière du planning.'),
     h('div', { class: 'subjects-grid', id: 'subjectsGrid' })
   );
-  ws.append(introSection);
+  ws.append(subjSection);
   const grid = $('#subjectsGrid');
   SUBJECTS.forEach(sub => grid.append(subjectCard(sub)));
 
-  /* --- Section 2 : la période --- */
-  const periodSection = h('div', { class: 'section' },
-    h('h3', null, '2. La période de révision'),
+  /* --- Section 3 : période --- */
+  ws.append(h('div', { class: 'section' },
+    h('h3', null, '3. La période de révision'),
     h('div', { class: 'period-grid' },
       h('label', null, 'Semaines complètes',
         (() => {
-          const inp = h('input', { type: 'number', id: 'weeksIn', min: '0', max: '52', step: '1', value: String(S.weeks) });
-          inp.addEventListener('input', () => {
-            S.weeks = Math.max(0, Math.min(52, parseInt(inp.value) || 0));
-            save(); scheduleRegenerate();
-          });
+          const inp = h('input', { type: 'number', min: '0', max: '52', step: '1', value: String(S.weeks) });
+          inp.addEventListener('input', () => { S.weeks = Math.max(0, Math.min(52, parseInt(inp.value) || 0)); save(); scheduleRegenerate(); });
           return inp;
         })()
       ),
-      h('label', null, 'Jours en plus (semaine incomplète)',
+      h('label', null, 'Jours en plus',
         (() => {
-          const inp = h('input', { type: 'number', id: 'extraIn', min: '0', max: '6', step: '1', value: String(S.extra) });
-          inp.addEventListener('input', () => {
-            S.extra = Math.max(0, Math.min(6, parseInt(inp.value) || 0));
-            save(); scheduleRegenerate();
-          });
+          const inp = h('input', { type: 'number', min: '0', max: '6', step: '1', value: String(S.extra) });
+          inp.addEventListener('input', () => { S.extra = Math.max(0, Math.min(6, parseInt(inp.value) || 0)); save(); scheduleRegenerate(); });
           return inp;
         })()
       ),
       h('label', null, 'Date de début',
         (() => {
-          const inp = h('input', { type: 'date', id: 'startIn', value: S.start });
+          const inp = h('input', { type: 'date', value: S.start });
           inp.addEventListener('change', () => { S.start = inp.value || S.start; save(); scheduleRegenerate(); });
           return inp;
         })()
       ),
       h('label', { class: 'check' },
         (() => {
-          const inp = h('input', { type: 'checkbox', id: 'skipSunIn' });
+          const inp = h('input', { type: 'checkbox' });
           inp.checked = S.skipSunday;
           inp.addEventListener('change', () => { S.skipSunday = inp.checked; save(); scheduleRegenerate(); });
           return inp;
@@ -369,25 +409,33 @@ function renderPlanTab(ws) {
       )
     ),
     h('p', { class: 'lead', style: 'margin:10px 0 0;font-size:12.5px' },
-      'Chaque journée de travail comporte 4 blocs de 2 h (8 h de travail effectif) avec deux pauses de 15 min et un déjeuner d’une heure de 12 h 45 à 13 h 45.')
-  );
-  ws.append(periodSection);
+      'Journée type : 4 blocs de 2 h (8 h de travail effectif), deux pauses de 15 min et un déjeuner d’une heure de 12 h 45 à 13 h 45.')
+  ));
 
-  /* --- Section 3 : bouton --- */
+  /* --- Section 4 : génération --- */
   ws.append(h('div', { class: 'section', style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
-    h('button', { class: 'btn pri', type: 'button', onclick: () => { generate(); } }, 'Générer / mettre à jour le planning'),
-    h('button', { class: 'btn', type: 'button', onclick: () => resetAll() }, 'Tout effacer'),
+    h('button', { class: 'btn pri', type: 'button', onclick: () => generate() }, 'Générer / mettre à jour le planning'),
+    h('button', { class: 'btn', type: 'button', onclick: resetAll }, 'Tout effacer'),
     h('span', { class: 'lead', style: 'font-size:12.5px;flex:1;min-width:180px;text-align:right' }, 'La mise à jour est aussi automatique quand vous modifiez un coefficient ou une durée.')
   ));
 
-  /* --- Section 4 : plan --- */
+  /* --- Section 5 : plan --- */
   const planSection = h('div', { id: 'planSection', style: 'margin-top:4px' });
   ws.append(planSection);
 
-  /* Essai de restauration d’un plan existant */
   if (S.plan) {
     try { renderPlanIntoScreen(S.plan); } catch (e) { /* plan obsolète */ }
   }
+}
+
+function applyExam(name) {
+  const grid = EXAM_COEFFS[name];
+  if (!grid) return;
+  S.activeExam = name;
+  SUBJECTS.forEach(s => { S.coeff[s.key] = grid[s.key] ?? 0; });
+  save();
+  renderWs();
+  toast('Coefficients « ' + name + ' » appliqués');
 }
 
 function subjectCard(sub) {
@@ -398,7 +446,7 @@ function subjectCard(sub) {
     sub.name
   ));
   const body = h('div', { class: 'subj-body' });
-  const coeffInput = h('input', { type: 'number', min: '0', max: '20', step: '0.5', value: String(S.coeff[sub.key] ?? sub.defCoeff), 'aria-label': 'Coefficient ' + sub.name });
+  const coeffInput = h('input', { type: 'number', min: '0', max: '20', step: '0.5', value: String(S.coeff[sub.key] ?? 1), 'aria-label': 'Coefficient ' + sub.name });
   coeffInput.addEventListener('input', () => {
     const v = parseFloat(coeffInput.value);
     S.coeff[sub.key] = isNaN(v) ? 0 : Math.max(0, v);
@@ -452,7 +500,7 @@ function scheduleRegenerate() {
   regenTimer = setTimeout(() => { if (S.plan) generate(true); }, 400);
 }
 
-/* ---------- génération du planning ---------- */
+/* ---------- génération ---------- */
 function generate(silent) {
   const subjects = SUBJECTS.map(s => subjectInfo(s.key));
   const active = subjects.filter(s => (S.coeff[s.key] || 0) > 0);
@@ -462,7 +510,6 @@ function generate(silent) {
   if (totalCalendarDays <= 0) { if (!silent) toast('Renseignez au moins une semaine ou un jour.'); return; }
   if (totalWeight <= 0) { if (!silent) toast('Renseignez au moins un coefficient > 0.'); return; }
 
-  /* construire les jours calendaires */
   const start = parseDateInput(S.start);
   const days = [];
   for (let i = 0; i < totalCalendarDays; i++) {
@@ -473,7 +520,6 @@ function generate(silent) {
   const activeDays = days.filter(d => !d.off);
   const totalBlocks = activeDays.length * BLOCKS_PER_DAY;
 
-  /* allouer les blocs selon les coefficients */
   const alloc = active.map(s => {
     const w = S.coeff[s.key];
     const exact = w / totalWeight * totalBlocks;
@@ -486,7 +532,6 @@ function generate(silent) {
   alloc.forEach(a => { a.blocks = a.floor; });
   alloc.sort((a, b) => SUBJECTS.findIndex(s => s.key === a.subject.key) - SUBJECTS.findIndex(s => s.key === b.subject.key));
 
-  /* construire la file de contenus par matière */
   const queues = alloc.map(a => {
     const prios = prioritiesFor(a.subject.parsed);
     const items = [];
@@ -496,26 +541,19 @@ function generate(silent) {
       } else {
         for (let i = 0; i < a.blocks; i++) {
           const id = prios[i % prios.length];
-          const level = a.subject.parsed.r[id];
-          items.push({ id, label: id, level });
+          items.push({ id, label: id, level: a.subject.parsed.r[id] });
         }
       }
     }
     return { subject: a.subject, items, used: 0 };
   });
 
-  /* répartir les blocs dans les jours actifs */
   const dayList = [];
   let lastSubjKey = null;
-  let activeIdx = 0;
   for (const day of days) {
-    if (day.off) {
-      dayList.push({ date: day.date, off: true, slots: [] });
-      continue;
-    }
+    if (day.off) { dayList.push({ date: day.date, off: true, slots: [] }); continue; }
     const slots = [];
     for (let b = 0; b < BLOCKS_PER_DAY; b++) {
-      /* choisir la matière : plus de blocs restants, avec pénalité si c’est la même que le créneau précédent */
       let best = null, bestScore = -Infinity;
       for (const q of queues) {
         const remaining = q.items.length - q.used;
@@ -524,21 +562,17 @@ function generate(silent) {
         if (lastSubjKey && q.subject.key === lastSubjKey) score -= 2.5;
         if (score > bestScore) { bestScore = score; best = q; }
       }
-      if (!best) {
-        /* plus aucun bloc : on remplit quand même le créneau pour la forme */
-        break;
-      }
+      if (!best) break;
       const item = best.items[best.used];
       best.used++;
       slots.push({ subject: best.subject, content: item });
       lastSubjKey = best.subject.key;
     }
     dayList.push({ date: day.date, off: false, slots });
-    activeIdx++;
   }
 
   const plan = {
-    start: start, end: days.length ? days[days.length - 1].date : start,
+    start, end: days.length ? days[days.length - 1].date : start,
     totalCalendarDays: days.length,
     workingDays: activeDays.length,
     totalBlocks: activeDays.length * BLOCKS_PER_DAY,
@@ -546,6 +580,7 @@ function generate(silent) {
     subjects: active,
     dayList,
     coeff: { ...S.coeff },
+    activeExam: S.activeExam,
     generatedAt: new Date()
   };
   S.plan = plan;
@@ -562,32 +597,26 @@ function parseDateInput(str) {
   return new Date();
 }
 
-function fmtLong(d) {
-  return DAYS_FR[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS_FR[d.getMonth()] + ' ' + d.getFullYear();
-}
-function fmtShort(d) {
-  return d.getDate() + ' ' + MONTHS_FR[d.getMonth()];
-}
+function fmtLong(d) { return DAYS_FR[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS_FR[d.getMonth()] + ' ' + d.getFullYear(); }
+function fmtShort(d) { return d.getDate() + ' ' + MONTHS_FR[d.getMonth()]; }
 
-/* ---------- rendu du plan à l’écran ---------- */
+/* ---------- rendu écran ---------- */
 function renderPlanIntoScreen(plan) {
   const container = $('#planSection');
   if (!container) return;
   container.innerHTML = '';
   const sec = h('div', { class: 'section' });
-  sec.append(h('h3', null, '3. Mon planning'));
+  sec.append(h('h3', null, '4. Mon planning'));
 
-  /* résumé */
   const totalH = plan.totalBlocks * 2;
-  const summary = h('div', { class: 'plan-summary' },
+  const examLabel = plan.activeExam ? ' · ' + plan.activeExam : '';
+  sec.append(h('div', { class: 'plan-summary' },
     statBox('Période', fmtShort(plan.start) + ' → ' + fmtShort(plan.end)),
     statBox('Jours travaillés', String(plan.workingDays)),
-    statBox('Total', totalH + ' h')
-  );
-  sec.append(summary);
+    statBox('Total', totalH + ' h' + examLabel)
+  ));
 
-  /* répartition par matière */
-  const subjTable = h('table', { class: 'subj-tbl', style: 'width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px' });
+  const subjTable = h('table', { style: 'width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px' });
   subjTable.append(h('thead', null,
     h('tr', null,
       h('th', { style: 'text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)' }, 'Matière'),
@@ -603,12 +632,11 @@ function renderPlanIntoScreen(plan) {
     if (!sub) return;
     const info = subjectInfo(sub.key);
     const prioCount = prioritiesFor(info.parsed).length;
-    const coeff = plan.coeff[sub.key] || 0;
     tb.append(h('tr', null,
       h('td', { style: 'padding:5px 8px;border-bottom:1px solid var(--line)' },
         h('span', { style: 'display:inline-block;width:10px;height:10px;border-radius:2px;background:' + sub.color + ';margin-right:6px;vertical-align:-1px' }),
         sub.name),
-      h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, String(coeff)),
+      h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, String(plan.coeff[sub.key] || 0)),
       h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, String(hs.blocks)),
       h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono)' }, hs.hours + ' h'),
       h('td', { style: 'text-align:right;padding:5px 8px;border-bottom:1px solid var(--line);font-family:var(--font-mono);font-size:12px;color:var(--muted)' }, prioCount ? String(prioCount) : '—')
@@ -617,7 +645,6 @@ function renderPlanIntoScreen(plan) {
   subjTable.append(tb);
   sec.append(subjTable);
 
-  /* légende */
   const legend = h('div', { class: 'legend' });
   plan.hoursPerSubject.forEach(hs => {
     const sub = SUBJ_BY_KEY[hs.key];
@@ -626,7 +653,6 @@ function renderPlanIntoScreen(plan) {
   });
   sec.append(legend);
 
-  /* jours */
   const days = h('div', { class: 'plan-days' });
   let idx = 0;
   plan.dayList.forEach(day => {
@@ -639,18 +665,11 @@ function renderPlanIntoScreen(plan) {
     }
     idx++;
     const dd = h('div', { class: 'plan-day' });
-    dd.append(h('div', { class: 'day-header' },
-      h('span', null, 'Jour ' + idx),
-      h('span', { class: 'date' }, fmtLong(day.date))
-    ));
+    dd.append(h('div', { class: 'day-header' }, h('span', null, 'Jour ' + idx), h('span', { class: 'date' }, fmtLong(day.date))));
     const body = h('div');
-    /* slots avec lunch inséré après le 2e */
     const order = [0, 1, 'lunch', 2, 3];
     order.forEach(o => {
-      if (o === 'lunch') {
-        body.append(h('div', { class: 'slot lunch' }, h('span', { class: 'time' }, LUNCH_TIME), 'Déjeuner'));
-        return;
-      }
+      if (o === 'lunch') { body.append(h('div', { class: 'slot lunch' }, h('span', { class: 'time' }, LUNCH_TIME), 'Déjeuner')); return; }
       const slot = day.slots[o];
       if (!slot) return;
       const sub = slot.subject;
@@ -659,8 +678,7 @@ function renderPlanIntoScreen(plan) {
       body.append(h('div', { class: 'slot', style: 'border-left-color:' + sub.color + ';background:' + sub.bg },
         h('span', { class: 'time' }, SLOT_TIMES[o]),
         h('span', { class: 'subj', style: 'color:' + sub.dark }, sub.short),
-        h('span', { class: 'cont', style: 'color:' + sub.dark },
-          (slot.content.label || 'Révisions générales') + levelTxt)
+        h('span', { class: 'cont', style: 'color:' + sub.dark }, (slot.content.label || 'Révisions générales') + levelTxt)
       ));
     });
     dd.append(body);
@@ -668,36 +686,29 @@ function renderPlanIntoScreen(plan) {
   });
   sec.append(days);
 
-  /* bouton export */
   sec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px' },
     h('button', { class: 'btn pri', type: 'button', onclick: () => $('#bPrint').click() }, 'Exporter en PDF'),
-    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Utilisez « Enregistrer au format PDF » dans la boîte d’impression.')
+    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Choisissez « Enregistrer au format PDF » dans la boîte d’impression.')
   ));
 
   container.append(sec);
 }
 
 function statBox(label, val) {
-  return h('div', { class: 'pstat' },
-    h('div', { class: 'lbl' }, label),
-    h('div', { class: 'val' }, val)
-  );
+  return h('div', { class: 'pstat' }, h('div', { class: 'lbl' }, label), h('div', { class: 'val' }, val));
 }
 
-/* ---------- rendu pour l’impression ---------- */
+/* ---------- rendu impression ---------- */
 function renderPlanIntoPrint(plan) {
   const root = $('#printRoot');
   if (!root) return;
   const totalH = plan.totalBlocks * 2;
-  const legendItems = plan.hoursPerSubject
-    .filter(hs => hs.blocks > 0)
-    .map(hs => {
-      const sub = SUBJ_BY_KEY[hs.key];
-      return '<span><i style="background:' + sub.color + '"></i>' + sub.name + '</span>';
-    }).join('');
+  const legendItems = plan.hoursPerSubject.filter(hs => hs.blocks > 0).map(hs => {
+    const sub = SUBJ_BY_KEY[hs.key];
+    return '<span><i style="background:' + sub.color + '"></i>' + sub.name + '</span>';
+  }).join('');
 
-  let daysHTML = '';
-  let idx = 0;
+  let daysHTML = '', idx = 0;
   plan.dayList.forEach(day => {
     if (day.off) {
       daysHTML += '<div class="plan-day off"><div class="day-header"><span>Repos</span><span class="date">' + fmtLong(day.date) + '</span></div><div class="day-body">Jour de repos conseillé.</div></div>';
@@ -707,10 +718,7 @@ function renderPlanIntoPrint(plan) {
     let bodyHTML = '';
     const order = [0, 1, 'lunch', 2, 3];
     order.forEach(o => {
-      if (o === 'lunch') {
-        bodyHTML += '<div class="slot lunch"><span class="time">' + LUNCH_TIME + '</span>Déjeuner</div>';
-        return;
-      }
+      if (o === 'lunch') { bodyHTML += '<div class="slot lunch"><span class="time">' + LUNCH_TIME + '</span>Déjeuner</div>'; return; }
       const slot = day.slots[o];
       if (!slot) return;
       const sub = slot.subject;
@@ -733,19 +741,19 @@ function renderPlanIntoPrint(plan) {
   });
   subjTbl += '</tbody></table>';
 
-  root.innerHTML =
-    '<h1>Planning de révision</h1>'
-    + '<div class="plan-meta">Du ' + fmtLong(plan.start) + ' au ' + fmtLong(plan.end)
-      + ' · ' + plan.workingDays + ' jours travaillés · ' + totalH + ' h de révision</div>'
+  const examTxt = plan.activeExam ? ' · Concours : ' + plan.activeExam : '';
+  root.innerHTML = '<h1>Planning de révision</h1>'
+    + '<div class="plan-meta">Du ' + fmtLong(plan.start) + ' au ' + fmtLong(plan.end) + examTxt
+    + ' · ' + plan.workingDays + ' jours travaillés · ' + totalH + ' h de révision</div>'
     + '<div class="plan-summary">'
-      + '<div class="pstat"><div class="lbl">Jours travaillés</div><div class="val">' + plan.workingDays + '</div></div>'
-      + '<div class="pstat"><div class="lbl">Blocs de 2 h</div><div class="val">' + plan.totalBlocks + '</div></div>'
-      + '<div class="pstat"><div class="lbl">Volume total</div><div class="val">' + totalH + ' h</div></div>'
+    + '<div class="pstat"><div class="lbl">Jours travaillés</div><div class="val">' + plan.workingDays + '</div></div>'
+    + '<div class="pstat"><div class="lbl">Blocs de 2 h</div><div class="val">' + plan.totalBlocks + '</div></div>'
+    + '<div class="pstat"><div class="lbl">Volume total</div><div class="val">' + totalH + ' h</div></div>'
     + '</div>'
     + '<div class="legend">' + legendItems + '</div>'
     + subjTbl
     + '<div class="plan-days">' + daysHTML + '</div>'
-    + '<p style="margin-top:6mm;font-size:8pt;color:#666">Chaque journée : 4 blocs de 2 h (08:30–10:30, 10:45–12:45, 13:45–15:45, 16:00–18:00), pause de 15 min entre les blocs du matin et de l’après-midi, déjeuner de 12 h 45 à 13 h 45.</p>';
+    + '<p style="margin-top:6mm;font-size:8pt;color:#666">Journée type : 08:30–10:30, 10:45–12:45, 13:45–15:45, 16:00–18:00. Pause de 15 min entre les blocs du matin et de l’après-midi, déjeuner de 12 h 45 à 13 h 45.</p>';
 }
 
 /* ---------- reset ---------- */
@@ -756,10 +764,9 @@ function resetAll() {
       h('div', { style: 'display:flex;gap:8px;justify-content:flex-end;margin-top:12px' },
         h('button', { class: 'btn', type: 'button', onclick: closeDlg }, 'Annuler'),
         h('button', { class: 'btn pri', type: 'button', onclick: () => {
-          S.codes = {};
-          SUBJECTS.forEach(s => { S.coeff[s.key] = s.defCoeff; });
-          S.weeks = 4; S.extra = 0;
-          S.start = new Date().toISOString().slice(0, 10);
+          S.codes = {}; S.activeExam = null;
+          SUBJECTS.forEach(s => { S.coeff[s.key] = 1; });
+          S.weeks = 4; S.extra = 0; S.start = new Date().toISOString().slice(0, 10);
           S.skipSunday = true; S.plan = null;
           save(); closeDlg(); renderWs(); $('#bPrint').disabled = true; $('#printRoot').innerHTML = '';
           toast('Page réinitialisée');
@@ -769,17 +776,13 @@ function resetAll() {
   );
 }
 
-/* ---------- onglet Conseils de travail ---------- */
+/* ---------- onglet Conseils ---------- */
 function renderAdviceTab(ws) {
   ws.append(h('h2', null, 'Conseils de travail'));
-
   ws.append(h('div', { class: 'section' },
     h('p', { class: 'lead', style: 'margin:0;font-size:14px' },
-      'Les méthodes ci-dessous sont celles qui font la différence entre une révision passive (relire) ',
-      'et une révision active (récupérer, expliquer, s’entraîner). Vous n’avez pas besoin de toutes les ',
-      'utiliser — choisissez-en deux ou trois et tenez-les sur la durée.')
+      'Les méthodes ci-dessous sont celles qui font la différence entre une révision passive (relire) et une révision active (récupérer, expliquer, s’entraîner). Vous n’avez pas besoin de toutes les utiliser — choisissez-en deux ou trois et tenez-les sur la durée.')
   ));
-
   ws.append(h('div', { class: 'advice-toc' },
     h('b', null, 'Au sommaire'),
     h('ol', null,
@@ -795,70 +798,54 @@ function renderAdviceTab(ws) {
       h('li', null, 'Que faire des compétences acquises ?')
     )
   ));
-
   adviceCard(ws, '🧠', 'La feuille blanche (active recall)', [
     'Après avoir lu un chapitre ou une fiche, prenez une feuille blanche et notez de mémoire tout ce dont vous vous souvenez : définitions, théorèmes, démonstrations, formules, schémas, exemples.',
     'Comparez ensuite votre production avec le cours. Repérez les oublis et les erreurs, puis comblez les manques à partir du cours.',
     'Refaites l’exercice quelques jours plus tard (J+1, J+3, J+7, J+21). Chaque rappel actif consolide la mémoire bien plus efficacement qu’une relecture passive.'
   ], 'C’est la méthode la plus rentable qui existe. Trente minutes de feuille blanche valent deux heures de relecture.');
-
   adviceCard(ws, '⏳', 'La répétition espacée', [
     'Ne révisez pas la même notion plusieurs fois de suite : espacez les révisions.',
     'Rythme suggéré : J+1 (le lendemain), J+3, J+7 (une semaine), J+21 (trois semaines), puis une fois par mois.',
-    'Le logiciel Anki (gratuit, flashcards) automatise ce rythme et est utilisé par la plupart des étudiants en médecine et en CPGE. Un jeu de 200 à 400 cartes bien fait suffit pour tout le programme.'
+    'Le logiciel Anki (gratuit, flashcards) automatise ce rythme. Un jeu de 200 à 400 cartes bien fait suffit pour tout le programme.'
   ], 'La courbe de l’oubli d’Ebbinghaus montre que sans révision, on oublie 70 % d’une information en 24 h. La répétition espacée neutralise cette courbe.');
-
   adviceCard(ws, '🔀', 'L’alternance des matières (interleaving)', [
     'Plutôt que de bloquer trois heures sur la même matière, alternez les disciplines dans la journée et dans la semaine.',
     'Votre cerveau apprend mieux quand il doit différencier les notions. Ce planning est déjà construit pour alterner automatiquement les matières.'
-  ], 'L’alternance augmente légèrement la difficulté ressentie, mais améliore fortement la rétention à long terme et la capacité à choisir la bonne méthode face à un problème nouveau.');
-
+  ], 'L’alternance augmente légèrement la difficulté ressentie, mais améliore fortement la rétention à long terme.');
   adviceCard(ws, '🎓', 'La méthode Feynman', [
     'Prenez une notion et expliquez-la à voix haute, comme si vous l’enseigniez à un camarade ou à un plus jeune.',
     'Dès que vous butez, revenez au cours : vous venez d’identifier une zone floue.',
     'Simplifiez le vocabulaire, donnez des exemples, utilisez des analogies. Si vous ne pouvez pas expliquer simplement, c’est que vous n’avez pas encore compris.'
   ], 'Cette méthode oblige à traiter l’information en profondeur. Elle est particulièrement efficace pour les démonstrations et les concepts abstraits.');
-
   adviceCard(ws, '📓', 'Le carnet d’erreurs', [
-    'Tenez un carnet (ou un fichier) où vous notez chaque erreur significative : erreur de calcul, de raisonnement, de méthode, de rédaction.',
+    'Tenez un carnet où vous notez chaque erreur significative : erreur de calcul, de raisonnement, de méthode, de rédaction.',
     'Pour chaque erreur, écrivez : ce que vous avez fait, ce qu’il fallait faire, et la règle à retenir.',
     'Relisez le carnet avant chaque DS et chaque concours blanc. C’est votre meilleur outil de progrès personnalisé.'
   ], 'Les concours testent souvent les mêmes pièges. Un étudiant qui supprime 80 % de ses erreurs récurrentes gagne plusieurs points de moyenne.');
-
   adviceCard(ws, '📝', 'Les annales en conditions réelles', [
-    'Les concours sont exigeants en rapidité : 4 h pour un sujet de maths, 4 h pour la physique, etc.',
     'Faites régulièrement des sujets en temps limité, sans interruption, dans les conditions du concours (même horaire, même matériel, pas de téléphone).',
     'Corrigez ensuite sérieusement, en notant les points perdus et leurs causes. C’est la correction qui fait progresser, pas le sujet lui-même.'
   ], 'Un sujet d’annales travaillé en conditions réelles vaut trois sujets faits à moitié en mode détendu.');
-
   adviceCard(ws, '🍅', 'Les cycles de travail (Pomodoro adapté)', [
     'Travaillez par blocs de 2 h (comme dans ce planning), avec de courtes pauses de 15 min.',
     'Pendant un bloc, une seule tâche, pas de téléphone, pas d’onglet ouvert inutilement.',
-    'Le cerveau reste efficace plus longtemps avec des sessions courtes et intenses qu’avec des marathons de 5 heures.',
     'La pause n’est pas une récompense : c’est un moment où le cerveau consolide ce qu’il vient d’apprendre.'
   ], 'Si vous avez du mal à démarrer, engagez-vous sur 10 minutes seulement. La motivation vient en faisant, pas avant.');
-
   adviceCard(ws, '😴', 'Sommeil, sport, alimentation', [
     'Dormez 7 à 8 h par nuit, à horaires réguliers. La mémoire se consolide pendant le sommeil profond et paradoxal.',
     'Faites 20 à 30 min de sport par jour : marche rapide, course, vélo, natation. Un cerveau oxygéné apprend mieux.',
-    'Mangez équilibré, évitez les gros pics de sucre (sodas, viennoiseries) qui provoquent des coups de barre.',
-    'Hydratez-vous régulièrement. Une déshydratation même légère fait chuter l’attention.'
+    'Mangez équilibré, évitez les gros pics de sucre qui provoquent des coups de barre. Hydratez-vous régulièrement.'
   ], 'Le sommeil n’est pas du temps perdu : c’est le moment où le cerveau range et consolide. Une nuit blanche avant un DS est presque toujours une mauvaise idée.');
-
   adviceCard(ws, '🧘', 'Préparation mentale', [
     'Acceptez de ne pas tout maîtriser. Concentrez-vous sur ce qui est faisable et prioritaire.',
     'La confiance vient de la régularité, pas d’un état de grâce ponctuel.',
-    'Ne vous comparez pas aux autres : comparez-vous à vous-même d’il y a une semaine.',
-    'Le jour du concours, vous serez jugé sur ce que vous savez faire, pas sur ce que vous ne savez pas. Maximisez les points faciles avant de chercher les questions difficiles.'
+    'Ne vous comparez pas aux autres : comparez-vous à vous-même d’il y a une semaine.'
   ], 'Une préparation régulière de 3 h par jour sur plusieurs mois vaut mieux que des journées de 12 h suivies d’épuisement.');
-
   adviceCard(ws, '✅', 'Que faire des compétences acquises ?', [
     'Ne les abandonnez pas complètement : une compétence « acquise » non entretenue redevient vite « à revoir ».',
     'Prévoyez une session de révision rapide (30 min) toutes les deux semaines environ.',
-    'Utilisez les flashcards (Anki) pour ces rappels d’entretien : quelques minutes par jour suffisent.',
-    'Les compétences « à revoir » restent prioritaires dans ce planning : elles sont placées en premier dans chaque matière.'
+    'Utilisez les flashcards (Anki) pour ces rappels d’entretien : quelques minutes par jour suffisent.'
   ], 'La règle d’or : mieux vaut couvrir 80 % du programme avec une révision régulière que 100 % une seule fois.');
-
   ws.append(h('div', { class: 'section' },
     h('h3', null, 'Comment utiliser ce planning'),
     h('ul', { style: 'margin:6px 0 0;padding-left:22px;font-size:13.5px;line-height:1.55' },
@@ -871,9 +858,7 @@ function renderAdviceTab(ws) {
 }
 
 function adviceCard(ws, emoji, title, paragraphs, tip) {
-  const card = h('div', { class: 'advice-card' },
-    h('h3', null, emoji + ' ' + title)
-  );
+  const card = h('div', { class: 'advice-card' }, h('h3', null, emoji + ' ' + title));
   paragraphs.forEach(p => card.append(h('p', null, p)));
   if (tip) card.append(h('div', { class: 'tip' }, '💡 ' + tip));
   ws.append(card);

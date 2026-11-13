@@ -58,6 +58,21 @@ button,input,select,textarea{font:inherit;color:inherit}
 .pbody{overflow:auto;padding:12px;flex:1;min-height:0}
 .small{font-size:12px;color:var(--muted);margin:0 0 9px}
 .mono{font-family:var(--font-mono);font-size:12.5px}
+/* simulateurs */
+.tools-row{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tool-pill{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border:1px solid var(--accent);border-radius:14px;background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;font-size:12px;font-weight:500;line-height:1.4}
+.tool-pill:hover{background:var(--accent);color:var(--accent-fg)}
+.tool-card{border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin:8px 0;background:var(--panel)}
+.tool-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tool-title{font-weight:600;color:var(--accent-ink);text-decoration:none;font-size:14.5px}
+.tool-title:hover{text-decoration:underline}
+.tool-file{color:var(--muted);font-size:11.5px;word-break:break-all}
+.tool-desc{font-size:13.5px;color:var(--muted);margin:4px 0 6px}
+.tool-comps{display:flex;gap:5px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.chip-mini{border:1px solid var(--line);border-radius:6px;padding:1px 7px;background:var(--panel2);cursor:pointer;font-family:var(--font-mono);font-size:11.5px}
+.chip-mini:hover{border-color:var(--accent);background:var(--accent-soft)}
+.repo-link{color:var(--accent-ink);text-decoration:none;font-family:var(--font-mono);font-size:12px;word-break:break-all}
+.repo-link:hover{text-decoration:underline}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:60;max-width:90vw}
 #dlg{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
 .dlgbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(640px,100%);max-height:88%;display:flex;flex-direction:column}
@@ -209,6 +224,158 @@ const themeByKey = k => THEMES.find(t => t.key === k);
 const idsOf = t => [...new Set(t.items.map(i => i.id))];
 const ALL_IDS = Object.keys(COMPS).sort();
 
+/* ---------- ressources externes (simulateurs GitHub) ---------- */
+const REPOS = {
+  meca: { name: 'Mécanique',            url: 'https://siicpgeamansur.github.io/mecanique/' },
+  slci: { name: 'SLCI',                 url: 'https://siicpgeamansur.github.io/SLCI/' },
+  num:  { name: 'Ingénierie numérique', url: 'https://siicpgeamansur.github.io/ingenierie_numerique/' }
+};
+function toolUrl(t) { return REPOS[t.repo].url + t.file; }
+
+const TOOLS = {
+  'A2-01': [{ repo:'meca', file:'coordonnees.html', title:'Coordonnées d’un point', desc:'Repérage cartésien, cylindrique, sphérique.' }],
+  'A2-02': [{ repo:'meca', file:'coordonnees.html', title:'Coordonnées d’un point', desc:'Éléments influents du milieu extérieur.' }],
+  'A3-02': [{ repo:'meca', file:'liaisons_usuelles.html', title:'Liaisons usuelles', desc:'Torseurs et choix de constituants.' }],
+  'A3-05': [
+    { repo:'meca', file:'trapeze_de_vitesse.html', title:'Trapèze de vitesse', desc:'Moteur, réducteur, tambour, charge.' },
+    { repo:'slci', file:'moteurs_electriques.html', title:'Moteurs électriques', desc:'Caractéristiques et fonctionnement.' },
+    { repo:'slci', file:'alimentation_elec.html', title:'Alimentation AC/DC', desc:'Chaîne de puissance.' },
+    { repo:'slci', file:'identification_mcc.html', title:'Identification MCC', desc:'Paramètres d’un moteur à courant continu.' }
+  ],
+  'A3-06': [
+    { repo:'slci', file:'codeur_incremental.html', title:'Codeur incrémental', desc:'Principe et signaux.' },
+    { repo:'slci', file:'codeur_absolu.html', title:'Codeur absolu', desc:'Codage absolu.' },
+    { repo:'slci', file:'potentiometre_rotatif.html', title:'Potentiomètre rotatif', desc:'Capteur de position angulaire.' },
+    { repo:'slci', file:'pont_Wheatstone.html', title:'Pont de Wheatstone', desc:'Conditionnement de capteurs résistifs.' }
+  ],
+  'A3-08': [{ repo:'slci', file:'ia.html', title:'IA pour asservir', desc:'Principes et applications.' }],
+  'A3-10': [
+    { repo:'slci', file:'asservissement_P_PI_PID.html', title:'Asservissement P/PI/PID', desc:'Structure d’un asservissement.' },
+    { repo:'slci', file:'correcteurs_SLCI_vision_physique.html', title:'Correcteurs : vision physique', desc:'Stabilité, précision, rapidité.' }
+  ],
+  'A4-01': [{ repo:'num', file:'traitement_donnees.html', title:'Traitement de données', desc:'Indicateurs de performance.' }],
+  'B2-06': [
+    { repo:'slci', file:'abaques_reponse_echelon_unitaire.html', title:'Abaques du 2nd ordre', desc:'Réponse indicielle.' },
+    { repo:'slci', file:'identification_temporelle.html', title:'Identification temporelle', desc:'1er et 2nd ordre.' },
+    { repo:'slci', file:'identification_frequentielle.html', title:'Identification fréquentielle', desc:'Réponse en fréquence.' }
+  ],
+  'B2-07': [{ repo:'slci', file:'calcul_ftbf.html', title:'Calcul FTBF', desc:'Schéma-blocs et FTBF.' }],
+  'B2-09': [{ repo:'slci', file:'correcteurs_numeriques.html', title:'Correcteurs numériques', desc:'Équations de récurrence.' }],
+  'B2-10': [
+    { repo:'meca', file:'cinetique.html', title:'Matrices d’inertie', desc:'Symétries et simplification.' },
+    { repo:'meca', file:'equilibrage.html', title:'Équilibrage statique', desc:'Solide en rotation.' },
+    { repo:'meca', file:'equilibrage_dynamique.html', title:'Équilibrage dynamique', desc:'Rotor.' }
+  ],
+  'B2-11': [{ repo:'meca', file:'liaisons_usuelles.html', title:'Liaisons usuelles', desc:'Torseurs statiques et cinématiques.' }],
+  'B2-13': [
+    { repo:'meca', file:'coordonnees.html', title:'Coordonnées d’un point', desc:'Repères et déplacements.' },
+    { repo:'meca', file:'animation_2R.html', title:'Bras robotisé 2R', desc:'Zone accessible et mouvements.' }
+  ],
+  'B2-14': [
+    { repo:'meca', file:'champ_vectoriel.html', title:'Champ vectoriel d’un torseur', desc:'Actions mécaniques.' },
+    { repo:'meca', file:'arc-boutement.html', title:'Arc-boutement', desc:'Frottement sec.' }
+  ],
+  'B2-15': [{ repo:'meca', file:'liaisons_usuelles.html', title:'Liaisons usuelles', desc:'Liaisons équivalentes.' }],
+  'B2-16': [{ repo:'meca', file:'TdM.html', title:'Théorie des mécanismes', desc:'Mobilité et hyperstatisme.' }],
+  'B3-01': [
+    { repo:'slci', file:'identification_temporelle.html', title:'Identification temporelle', desc:'Modèle vs mesures.' },
+    { repo:'slci', file:'identification_mcc.html', title:'Identification MCC', desc:'Modèle du moteur.' }
+  ],
+  'C1-01': [
+    { repo:'slci', file:'calcul_ftbf.html', title:'Calcul FTBF', desc:'FTBO et FTBF.' },
+    { repo:'slci', file:'Bode.html', title:'Diagramme de Bode', desc:'Marges et performances.' }
+  ],
+  'C1-02': [
+    { repo:'slci', file:'asservissement_P_PI_PID.html', title:'Asservissement P/PI/PID', desc:'Réglage des correcteurs.' },
+    { repo:'slci', file:'correcteurs_SLCI_vision_physique.html', title:'Correcteurs : vision physique', desc:'Démarches de réglage.' },
+    { repo:'slci', file:'reglage_correcteurs.html', title:'Réglages de correcteurs', desc:'Méthodes.' }
+  ],
+  'C1-03': [{ repo:'num', file:'resolution_equations.html', title:'Résolution d’équations', desc:'Choix d’algorithme.' }],
+  'C1-04': [
+    { repo:'meca', file:'figures_geometrales.html', title:'Figures géométrales', desc:'Projections.' },
+    { repo:'meca', file:'loi_entree_sortie.html', title:'Loi entrée-sortie', desc:'Fermetures géométriques.' }
+  ],
+  'C1-05': [
+    { repo:'meca', file:'TdM.html', title:'Théorie des mécanismes', desc:'Choix des isolements.' },
+    { repo:'meca', file:'TEC.html', title:'Théorème de l’énergie cinétique', desc:'TEC.' },
+    { repo:'meca', file:'trapeze_de_vitesse.html', title:'Trapèze de vitesse', desc:'Dimensionnement.' }
+  ],
+  'C2-01': [
+    { repo:'slci', file:'abaques_reponse_echelon_unitaire.html', title:'Abaques du 2nd ordre', desc:'Réponse temporelle.' },
+    { repo:'slci', file:'identification_temporelle.html', title:'Identification temporelle', desc:'Réponse temporelle.' }
+  ],
+  'C2-02': [
+    { repo:'slci', file:'Bode.html', title:'Diagramme de Bode', desc:'Tracé et marges.' },
+    { repo:'slci', file:'identification_frequentielle.html', title:'Identification fréquentielle', desc:'Réponse en fréquence.' }
+  ],
+  'C2-03': [
+    { repo:'slci', file:'Bode.html', title:'Diagramme de Bode', desc:'Marges de stabilité.' },
+    { repo:'slci', file:'correcteurs_SLCI_vision_physique.html', title:'Correcteurs : vision physique', desc:'Stabilité, précision, rapidité.' }
+  ],
+  'C2-04': [
+    { repo:'slci', file:'asservissement_P_PI_PID.html', title:'Asservissement P/PI/PID', desc:'Réglage.' },
+    { repo:'slci', file:'correcteurs_SLCI_vision_physique.html', title:'Correcteurs : vision physique', desc:'Réglages pas à pas.' },
+    { repo:'slci', file:'reglage_correcteurs.html', title:'Réglages de correcteurs', desc:'Méthodes.' },
+    { repo:'slci', file:'correcteurs_numeriques.html', title:'Correcteurs numériques', desc:'Cas discrets.' }
+  ],
+  'C2-05': [
+    { repo:'meca', file:'coordonnees.html', title:'Coordonnées d’un point', desc:'Repérage.' },
+    { repo:'meca', file:'animation_2R.html', title:'Bras robotisé 2R', desc:'Mouvements composés.' }
+  ],
+  'C2-06': [
+    { repo:'meca', file:'loi_entree_sortie.html', title:'Loi entrée-sortie', desc:'Lois géométriques et cinématiques.' },
+    { repo:'meca', file:'animation_2R.html', title:'Bras robotisé 2R', desc:'Cinématique de mécanismes.' }
+  ],
+  'C2-07': [
+    { repo:'meca', file:'champ_vectoriel.html', title:'Champ vectoriel d’un torseur', desc:'Statique.' },
+    { repo:'meca', file:'arc-boutement.html', title:'Arc-boutement', desc:'Équilibre avec frottement.' }
+  ],
+  'C2-08': [
+    { repo:'meca', file:'cinetique.html', title:'Matrices d’inertie', desc:'Cinétique.' },
+    { repo:'meca', file:'TEC.html', title:'Théorème de l’énergie cinétique', desc:'TEC.' },
+    { repo:'meca', file:'equilibrage_dynamique.html', title:'Équilibrage dynamique', desc:'Dynamique du rotor.' },
+    { repo:'meca', file:'equation_differentielle_mouvement.html', title:'Équations du mouvement', desc:'PFD.' }
+  ],
+  'C2-09': [
+    { repo:'meca', file:'equation_differentielle_mouvement.html', title:'Équations du mouvement', desc:'Loi de mouvement.' },
+    { repo:'meca', file:'trapeze_de_vitesse.html', title:'Trapèze de vitesse', desc:'Cinématique de charge.' }
+  ],
+  'C3-01': [{ repo:'num', file:'resolution_equations.html', title:'Résolution d’équations', desc:'Simulation numérique.' }],
+  'C3-02': [{ repo:'num', file:'resolution_equations.html', title:'Résolution d’équations', desc:'Dichotomie, Newton, Euler.' }],
+  'C3-03': [{ repo:'slci', file:'ia.html', title:'IA pour asservir', desc:'Résolution par IA.' }],
+  'D1-02': [{ repo:'slci', file:'moteurs_electriques.html', title:'Moteurs électriques', desc:'Constituants des chaînes.' }],
+  'D1-03': [{ repo:'meca', file:'trapeze_de_vitesse.html', title:'Trapèze de vitesse', desc:'Effort et flux.' }],
+  'D2-05': [
+    { repo:'slci', file:'identification_mcc.html', title:'Identification MCC', desc:'Choix des entrées/sorties.' },
+    { repo:'slci', file:'identification_temporelle.html', title:'Identification temporelle', desc:'Modèle de comportement.' }
+  ],
+  'D2-06': [
+    { repo:'slci', file:'codeur_incremental.html', title:'Codeur incrémental', desc:'Choix de capteur.' },
+    { repo:'slci', file:'codeur_absolu.html', title:'Codeur absolu', desc:'Choix de capteur.' },
+    { repo:'slci', file:'pont_Wheatstone.html', title:'Pont de Wheatstone', desc:'Capteurs résistifs.' },
+    { repo:'slci', file:'potentiometre_rotatif.html', title:'Potentiomètre rotatif', desc:'Capteur de position.' }
+  ],
+  'D3-02': [{ repo:'slci', file:'codeur_incremental.html', title:'Codeur incrémental', desc:'Mise en œuvre.' }],
+  'D3-03': [{ repo:'num', file:'traitement_donnees.html', title:'Traitement de données', desc:'Moyennes, filtres.' }],
+  'D3-04': [
+    { repo:'slci', file:'codeur_absolu.html', title:'Codeur absolu', desc:'Résolution et quantification.' },
+    { repo:'slci', file:'pont_Wheatstone.html', title:'Pont de Wheatstone', desc:'Erreurs de mesure.' }
+  ],
+  'F2-01': [
+    { repo:'slci', file:'asservissement_P_PI_PID.html', title:'Asservissement P/PI/PID', desc:'Modifier la commande.' },
+    { repo:'slci', file:'correcteurs_SLCI_vision_physique.html', title:'Correcteurs : vision physique', desc:'Faire évoluer le comportement.' }
+  ]
+};
+
+const ALL_TOOLS = [];
+(function() {
+  const seen = new Set();
+  Object.values(TOOLS).forEach(arr => arr.forEach(t => {
+    const k = t.repo + '/' + t.file;
+    if (!seen.has(k)) { seen.add(k); ALL_TOOLS.push(t); }
+  }));
+})();
+
 /* ---------- état ---------- */
 const S = (() => { const s = lsGet(KEY, {}); return { r: s.r || {}, n: s.n || {} }; })();
 function save() { lsSet(KEY, S); }
@@ -244,10 +411,12 @@ function renderSeg() {
   const mk = (id, label, c) => h('button', { type: 'button', role: 'tab', 'aria-pressed': id === UI.cur ? 'true' : 'false', 'aria-selected': id === UI.cur ? 'true' : 'false', onclick: () => gotoWs(id) }, label, c ? h('span', { class: 'cnt' }, c) : null);
   seg.append(mk('home', 'Vue d’ensemble'));
   THEMES.forEach((t, i) => { const c = tally(idsOf(t)); seg.append(mk(t.key, (i + 1) + '. ' + t.title, c[3] + '/' + c.total)); });
+  seg.append(mk('tools', '↗ Simulateurs', String(ALL_TOOLS.length)));
 }
 function mountWs() {
   const root = $('#ws'); root.innerHTML = '';
   if (UI.cur === 'home') { $('#hint').textContent = 'Votre carte des 88 compétences du programme. Cliquez sur une case pour aller la travailler.'; mountHome(root); }
+  else if (UI.cur === 'tools') { $('#hint').textContent = 'Simulateurs interactifs : chaque outil est relié aux compétences qu’il permet de travailler.'; mountTools(root); }
   else { $('#hint').textContent = 'Évaluez-vous honnêtement : « À revoir », « En cours » ou « Acquise ». Un second clic efface votre choix.'; mountTheme(root, themeByKey(UI.cur)); }
   const sc = $('#scroller'); if (sc) sc.scrollTop = 0;
 }
@@ -314,15 +483,28 @@ function compEl(id, t, it) {
   if (t.axes.length) it.ax.slice(1).forEach(a => tags.append(h('span', { class: 'tag' }, 'aussi : ' + t.axes[a])));
   const other = (THEMES_OF[id] || []).filter(k => k !== t.key);
   if (other.length) tags.append(h('span', { class: 'tag' }, 'aussi dans : ' + other.map(k => themeByKey(k).title).join(', ')));
-  el.append(h('div', null, h('div', { class: 'chead' }, h('span', { class: 'cid' }, id), h('span', { class: 'ctext' }, c.t)), tags),
-    h('div', { class: 'rate', role: 'group', 'aria-label': 'Niveau pour ' + id }, [1, 2, 3].map(n => h('button', { type: 'button', 'data-l': n, 'aria-pressed': String(l === n), onclick: () => setLevel(id, n) }, LEVELS[n].n))));
+
+  const kids = [
+    h('div', null, h('div', { class: 'chead' }, h('span', { class: 'cid' }, id), h('span', { class: 'ctext' }, c.t)), tags),
+    h('div', { class: 'rate', role: 'group', 'aria-label': 'Niveau pour ' + id },
+      [1, 2, 3].map(n => h('button', { type: 'button', 'data-l': n, 'aria-pressed': String(l === n), onclick: () => setLevel(id, n) }, LEVELS[n].n)))
+  ];
+
+  const tools = TOOLS[id] || [];
+  if (tools.length) {
+    kids.push(h('div', { class: 'tools-row', 'aria-label': 'Simulateurs associés' }, tools.map(tool =>
+      h('a', { class: 'tool-pill', href: toolUrl(tool), target: '_blank', rel: 'noopener', title: REPOS[tool.repo].name + ' · ' + tool.desc }, '↗ ', tool.title))));
+  }
+
   const det = h('details', null, h('summary', null, 'Connaissances associées et note personnelle'));
   if (c.k.length) det.append(h('ul', null, c.k.map(k => h('li', null, k))));
   else det.append(h('p', { class: 'small' }, 'Pas de connaissances détaillées pour cette compétence dans le programme.'));
   const inp = h('input', { type: 'text', id: 'note-' + t.key + '-' + id, maxlength: 200, placeholder: 'Ex. refaire le TD 4, revoir le cours', value: S.n[id] || '', 'aria-label': 'Note personnelle ' + id });
   inp.addEventListener('input', () => { if (inp.value.trim()) S.n[id] = inp.value; else delete S.n[id]; save(); });
   det.append(h('label', { class: 'note' }, h('span', null, 'Ma note'), inp));
-  el.append(det);
+  kids.push(det);
+
+  el.append(...kids);
   return el;
 }
 function updateTop(t) {
@@ -361,6 +543,37 @@ function mountTheme(root, t) {
     root.append(sec);
   });
   if (!shown) root.append(h('p', { class: 'empty' }, 'Aucune compétence ne correspond à ces filtres.'));
+}
+
+/* ---------- page « Simulateurs » ---------- */
+function mountTools(root) {
+  root.append(
+    h('h2', null, 'Simulateurs interactifs'),
+    h('p', { class: 'lead' }, 'Une sélection de simulateurs en ligne pour expérimenter les notions du programme. Chaque simulateur est relié aux compétences qu’il permet de travailler.')
+  );
+  Object.keys(REPOS).forEach(repo => {
+    const r = REPOS[repo];
+    const repoTools = ALL_TOOLS.filter(t => t.repo === repo);
+    if (!repoTools.length) return;
+    root.append(
+      h('h3', null, r.name),
+      h('p', { class: 'small' }, 'Dépôt : ',
+        h('a', { class: 'repo-link', href: r.url, target: '_blank', rel: 'noopener' }, r.url))
+    );
+    repoTools.forEach(t => {
+      const comps = Object.keys(TOOLS).filter(cid => TOOLS[cid].some(x => x.repo === t.repo && x.file === t.file));
+      root.append(h('div', { class: 'tool-card' },
+        h('div', { class: 'tool-head' },
+          h('a', { class: 'tool-title', href: toolUrl(t), target: '_blank', rel: 'noopener' }, t.title, ' ↗'),
+          h('span', { class: 'tool-file mono' }, t.file)),
+        h('p', { class: 'tool-desc' }, t.desc),
+        h('div', { class: 'tool-comps' },
+          h('span', null, 'Compétences : '),
+          comps.map(cid => h('button', { type: 'button', class: 'chip-mini', onclick: () => gotoWs(THEMES_OF[cid][0], cid) }, cid))
+        )
+      ));
+    });
+  });
 }
 
 /* ---------- panneau « Mon bilan » ---------- */
@@ -441,7 +654,7 @@ $('#bSave').addEventListener('click', () => {
 });
 $('#bHelp').addEventListener('click', () => {
   openDlg('Aide', h('div', { html: '<p>Cette page reprend les compétences du programme de sciences de l’ingénieur sur les deux années de CPGE (PCSI puis PSI), regroupées en 7 thématiques.</p>' +
-    '<h3>Utilisation</h3><ul><li>Ouvrez une thématique et choisissez pour chaque compétence : <b>À revoir</b>, <b>En cours</b> ou <b>Acquise</b>. Un second clic efface le choix.</li><li>Dépliez « Connaissances associées » pour voir ce que la compétence recouvre et ajouter une note.</li><li>Les filtres par semestre, niveau et chapitre aident à trier. S1 et S2 correspondent à la PCSI, S3 et S4 à la PSI.</li><li>« Vue d’ensemble » et « Mon bilan » montrent ce qui est acquis et ce qui reste à travailler.</li><li>Une compétence présente dans plusieurs thématiques garde le même niveau partout.</li></ul>' +
+    '<h3>Utilisation</h3><ul><li>Ouvrez une thématique et choisissez pour chaque compétence : <b>À revoir</b>, <b>En cours</b> ou <b>Acquise</b>. Un second clic efface le choix.</li><li>Dépliez « Connaissances associées » pour voir le détail et ajouter une note.</li><li>Les filtres par semestre, niveau et chapitre aident à trier. S1 et S2 correspondent à la PCSI, S3 et S4 à la PSI.</li><li><b>Nouveau</b> : la pastille <code>↗ Nom du simulateur</code> ouvre directement un simulateur interactif relié à la compétence (dépôts <i>mecanique</i>, <i>SLCI</i>, <i>ingenierie_numerique</i>). L’onglet <b>↗ Simulateurs</b> liste tous les outils par dépôt.</li><li>« Vue d’ensemble » et « Mon bilan » montrent ce qui est acquis et ce qu’il reste à travailler.</li><li>Une compétence présente dans plusieurs thématiques garde le même niveau partout.</li></ul>' +
     '<h3>Vos données</h3><p>Les évaluations sont mémorisées dans ce navigateur uniquement. Le bouton « Sauvegarde » donne un code à copier, pour changer d’appareil ou envoyer un résumé à votre professeur.</p>' }));
 });
 

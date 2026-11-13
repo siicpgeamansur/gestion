@@ -137,9 +137,9 @@ button,input,select,textarea{font:inherit;color:inherit}
   .slot{grid-template-columns:90px 1fr}
 }
 
-/* ---------- impression : A4 portrait, une page par semaine ---------- */
+/* ---------- Impression : A4 portrait, une page par semaine (lundi → dimanche) ---------- */
 @media print {
-  @page { size: A4 landscape; margin: 8mm; }
+  @page { size: A4 portrait; margin: 10mm; }
   html,body{height:auto !important;overflow:visible !important}
   body{background:#fff !important;color:#000 !important}
   #app, #toast, #dlg{display:none !important}
@@ -148,14 +148,14 @@ button,input,select,textarea{font:inherit;color:inherit}
     display:block !important;
     font-family:'IBM Plex Sans',system-ui,sans-serif;
     color:#000;
-    font-size:8.5pt;
-    line-height:1.3;
+    font-size:9pt;
+    line-height:1.35;
   }
+
+  /* Une page par semaine */
   #printRoot .week-page{
     page-break-after: always;
     break-after: page;
-    page-break-inside: avoid;
-    break-inside: avoid;
     padding-bottom: 2mm;
   }
   #printRoot .week-page:last-child{
@@ -163,106 +163,80 @@ button,input,select,textarea{font:inherit;color:inherit}
     break-after: auto;
   }
 
-  #printRoot h1{font-size:15pt;margin:0 0 1mm}
+  /* Titre de la semaine */
   #printRoot .week-title{
-    font-size:11pt;
-    margin:0 0 2mm;
-    padding-bottom:1mm;
-    border-bottom:1.2px solid #333;
+    font-size:13pt;
+    margin:0 0 4mm;
+    padding-bottom:1.5mm;
+    border-bottom:1.5px solid #333;
     display:flex;
     justify-content:space-between;
     align-items:baseline;
     gap:3mm;
+    flex-wrap:wrap;
   }
   #printRoot .week-title .wt-num{font-weight:700}
-  #printRoot .week-title .wt-dates{font-size:9pt;font-weight:400;color:#555}
+  #printRoot .week-title .wt-dates{font-size:10pt;font-weight:400;color:#555}
 
-  #printRoot .plan-meta{font-size:8.5pt;color:#444;margin-bottom:2mm}
-  #printRoot .plan-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm;margin-bottom:2mm}
-  #printRoot .pstat{border:1px solid #bbb;border-radius:2px;padding:1.2mm 2mm}
-  #printRoot .pstat .lbl{color:#666;font-size:7pt}
-  #printRoot .pstat .val{font:600 9.5pt 'IBM Plex Mono',monospace}
-
-  #printRoot .week-summary{
-    display:flex;
-    gap:4mm;
-    flex-wrap:wrap;
-    font-size:7.5pt;
-    color:#333;
-    margin:0 0 2mm;
-    padding:1mm 2mm;
-    border:1px dashed #bbb;
-    border-radius:2px;
-    background:#fafafa;
-  }
-  #printRoot .week-summary b{font-family:'IBM Plex Mono',monospace;font-weight:600}
-  #printRoot .week-summary .ws-tag{
-    display:inline-flex;align-items:center;gap:1mm;
-  }
-  #printRoot .week-summary .ws-tag i{display:inline-block;width:7px;height:7px;border-radius:1px}
-
-  #printRoot .legend{font-size:7.5pt;color:#333;margin:0 0 2mm;display:flex;gap:4mm;flex-wrap:wrap}
-  #printRoot .legend span{display:inline-flex;align-items:center;gap:1mm}
-  #printRoot .legend i{display:inline-block;width:8px;height:8px;border-radius:1px}
-
-  #printRoot .subj-tbl{width:100%;border-collapse:collapse;font-size:7.5pt;margin-bottom:3mm}
-  #printRoot .subj-tbl th,
-  #printRoot .subj-tbl td{border:1px solid #bbb;padding:0.8mm 1.5mm;text-align:left}
-  #printRoot .subj-tbl th{background:#eee;font-weight:600}
-
-  /* grille semaine : 2 colonnes, 4 lignes, remplissage en colonne */
+  /* Grille des jours : 2 colonnes, remplissage ligne par ligne */
   #printRoot .week-grid{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    grid-template-rows:repeat(4, auto);
-    grid-auto-flow:column;
-    gap:2mm;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
   }
+
   #printRoot .plan-day{
     border:1px solid #bbb;
-    border-radius:2px;
+    border-radius:3px;
     overflow:hidden;
     page-break-inside:avoid;
     break-inside:avoid;
     background:#fff;
   }
   #printRoot .plan-day .day-header{
-    font-size:7.5pt;
-    padding:0.8mm 1.5mm;
+    font-size:9pt;
+    padding:1.5mm 2mm;
     background:#eee;
     border-bottom:1px solid #bbb;
     display:flex;
     justify-content:space-between;
+    align-items:baseline;
     gap:2mm;
     font-weight:600;
   }
-  #printRoot .plan-day .day-header .date{color:#555;font-weight:400}
+  #printRoot .plan-day .day-header .date{color:#555;font-weight:400;font-size:8pt}
   #printRoot .plan-day.off{background:#f5f5f5}
-  #printRoot .plan-day.off .day-body{padding:3mm;text-align:center;color:#888;font-size:8pt;font-style:italic}
+  #printRoot .plan-day.off .day-body{
+    padding:4mm;
+    text-align:center;
+    color:#888;
+    font-size:9pt;
+    font-style:italic;
+  }
 
-  /* créneaux compacts sur une ligne */
+  /* Créneaux : sur une ligne, bien espacés pour remplir la page */
   #printRoot .slot{
     display:flex !important;
     align-items:center;
-    gap:1.5mm;
-    padding:0.7mm 1.5mm !important;
-    font-size:7.5pt !important;
-    border-left-width:3px !important;
-    border-top:1px solid rgba(0,0,0,.05);
+    gap:2mm;
+    padding:1.8mm 2mm !important;
+    font-size:9pt !important;
+    border-left-width:4px !important;
+    border-top:1px solid rgba(0,0,0,.06);
     background:#fafafa;
   }
   #printRoot .slot .time{
     font-family:'IBM Plex Mono',monospace;
-    font-size:6.5pt !important;
+    font-size:7.5pt !important;
     color:#333;
     flex:none;
-    min-width:19mm;
+    min-width:22mm;
   }
   #printRoot .slot .subj{
     font-weight:600;
     flex:none;
-    min-width:12mm;
-    font-size:7.5pt !important;
+    min-width:14mm;
+    font-size:9pt !important;
   }
   #printRoot .slot .cont{
     flex:1;
@@ -270,7 +244,7 @@ button,input,select,textarea{font:inherit;color:inherit}
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
-    font-size:7.2pt !important;
+    font-size:8.5pt !important;
   }
   #printRoot .slot.lunch{
     background:#f0f0f0 !important;
@@ -279,16 +253,6 @@ button,input,select,textarea{font:inherit;color:inherit}
     font-style:italic;
   }
   #printRoot .slot.lunch .subj{color:#888;font-weight:500}
-
-  #printRoot .print-foot{
-    margin-top:3mm;
-    font-size:7pt;
-    color:#777;
-    border-top:1px solid #ddd;
-    padding-top:1mm;
-    display:flex;
-    justify-content:space-between;
-  }
 }
 </style>
 </head>
@@ -529,7 +493,7 @@ function renderPlanTab(ws) {
       )
     ),
     h('p', { class: 'lead', style: 'margin:10px 0 0;font-size:12.5px' },
-      'Journée type : 4 blocs de 2 h (8 h de travail effectif), pauses de 15 min et déjeuner d’une heure (12 h 45 – 13 h 45). Le PDF comporte une page par semaine.')
+      'Journée type : 4 blocs de 2 h (8 h de travail effectif), pauses de 15 min et déjeuner d’une heure (12 h 45 – 13 h 45). Le PDF comporte une page par semaine calendaire (lundi → dimanche).')
   ));
 
   ws.append(h('div', { class: 'section', style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
@@ -784,7 +748,7 @@ function renderPlanIntoScreen(plan) {
 
   sec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px' },
     h('button', { class: 'btn pri', type: 'button', onclick: () => $('#bPrint').click() }, 'Exporter en PDF'),
-    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Format A4 portrait, une page par semaine.')
+    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Format A4 portrait, une page par semaine calendaire (lundi → dimanche).')
   ));
 
   container.append(sec);
@@ -793,81 +757,41 @@ function statBox(label, val) {
   return h('div', { class: 'pstat' }, h('div', { class: 'lbl' }, label), h('div', { class: 'val' }, val));
 }
 
-/* ---------- rendu impression : A4 portrait, une page par semaine ---------- */
+/* ---------- rendu impression : une page par semaine (lundi → dimanche) ---------- */
 function renderPlanIntoPrint(plan) {
   const root = $('#printRoot');
   if (!root) return;
-  const totalH = plan.totalBlocks * 2;
 
-  /* Grouper en semaines de 7 jours calendaires */
+  /* Regroupement par semaine calendaire : lundi → dimanche.
+     Un nouveau groupe démarre à chaque lundi ; un groupe se termine au dimanche
+     ou à la fin de la période. */
   const weeks = [];
-  for (let i = 0; i < plan.dayList.length; i += 7) weeks.push(plan.dayList.slice(i, i + 7));
+  let current = [];
+  plan.dayList.forEach(day => {
+    const dow = day.date.getDay(); // 0 = dimanche, 1 = lundi, …, 6 = samedi
+    if (dow === 1 && current.length > 0) {
+      weeks.push(current);
+      current = [];
+    }
+    current.push(day);
+  });
+  if (current.length) weeks.push(current);
 
-  /* Numérotation continue des jours travaillés */
   let workCounter = 0;
-
-  /* Construire les blocs HTML, semaine par semaine */
   let html = '';
+
   weeks.forEach((weekDays, wIdx) => {
     const weekNum = wIdx + 1;
     const firstDate = weekDays[0].date;
     const lastDate = weekDays[weekDays.length - 1].date;
 
-    /* Résumé de la semaine en heures par matière */
-    const wCounts = {};
-    weekDays.forEach(d => {
-      if (d.off) return;
-      d.slots.forEach(s => { wCounts[s.subject.key] = (wCounts[s.subject.key] || 0) + 1; });
-    });
-    const wSummaryParts = Object.keys(wCounts).map(k => {
-      const sub = SUBJ_BY_KEY[k];
-      const hrs = wCounts[k] * 2;
-      return '<span class="ws-tag"><i style="background:' + sub.color + '"></i>' + sub.short + ' <b>' + hrs + ' h</b></span>';
-    });
-    const wTotalH = Object.values(wCounts).reduce((a, n) => a + n * 2, 0);
-
-    /* Bloc HTML de la semaine */
     html += '<div class="week-page">';
-
-    if (wIdx === 0) {
-      /* En-tête général : uniquement sur la 1ère page */
-      const examTxt = plan.activeExam ? ' · Concours : ' + plan.activeExam : '';
-      html += '<h1>Planning de révision</h1>';
-      html += '<div class="plan-meta">Du ' + fmtLong(plan.start) + ' au ' + fmtLong(plan.end) + examTxt
-            + ' · ' + plan.workingDays + ' jours travaillés · ' + totalH + ' h de révision au total</div>';
-
-      /* Tableau global */
-      html += '<div class="plan-summary">'
-        + '<div class="pstat"><div class="lbl">Jours travaillés</div><div class="val">' + plan.workingDays + '</div></div>'
-        + '<div class="pstat"><div class="lbl">Blocs de 2 h</div><div class="val">' + plan.totalBlocks + '</div></div>'
-        + '<div class="pstat"><div class="lbl">Volume total</div><div class="val">' + totalH + ' h</div></div>'
-        + '</div>';
-
-      const legendItems = plan.hoursPerSubject.filter(hs => hs.blocks > 0).map(hs => {
-        const sub = SUBJ_BY_KEY[hs.key];
-        return '<span><i style="background:' + sub.color + '"></i>' + sub.name + '</span>';
-      }).join('');
-      html += '<div class="legend">' + legendItems + '</div>';
-
-      let subjTbl = '<table class="subj-tbl"><thead><tr><th>Matière</th><th>Coeff.</th><th>Blocs</th><th>Heures</th></tr></thead><tbody>';
-      plan.hoursPerSubject.forEach(hs => {
-        const sub = SUBJ_BY_KEY[hs.key];
-        if (!sub) return;
-        subjTbl += '<tr><td>' + sub.name + '</td><td style="text-align:right">' + (plan.coeff[sub.key] || 0) + '</td><td style="text-align:right">' + hs.blocks + '</td><td style="text-align:right">' + hs.hours + ' h</td></tr>';
-      });
-      subjTbl += '</tbody></table>';
-      html += subjTbl;
-    }
-
-    /* En-tête de la semaine */
     html += '<h2 class="week-title">'
           + '<span class="wt-num">Semaine ' + weekNum + '</span>'
           + '<span class="wt-dates">du ' + fmtLongShort(firstDate) + ' au ' + fmtLongShort(lastDate) + '</span>'
           + '</h2>';
-    html += '<div class="week-summary">' + wSummaryParts.join(' ') + '<span style="margin-left:auto;font-weight:600">Total : ' + wTotalH + ' h</span></div>';
-
-    /* Grille semaine : 2 colonnes, 4 lignes, remplissage en colonne */
     html += '<div class="week-grid">';
+
     weekDays.forEach(day => {
       if (day.off) {
         html += '<div class="plan-day off">'
@@ -880,7 +804,11 @@ function renderPlanIntoPrint(plan) {
         const order = [0, 1, 'lunch', 2, 3];
         order.forEach(o => {
           if (o === 'lunch') {
-            slotsHTML += '<div class="slot lunch"><span class="time">' + LUNCH_TIME_COMPACT + '</span><span class="subj">Déjeuner</span><span class="cont"></span></div>';
+            slotsHTML += '<div class="slot lunch">'
+                      + '<span class="time">' + LUNCH_TIME_COMPACT + '</span>'
+                      + '<span class="subj">Déjeuner</span>'
+                      + '<span class="cont"></span>'
+                      + '</div>';
             return;
           }
           const slot = day.slots[o];
@@ -900,15 +828,9 @@ function renderPlanIntoPrint(plan) {
               + '</div>';
       }
     });
-    html += '</div>';
 
-    /* Pied de page discret */
-    html += '<div class="print-foot">'
-          + '<span>Semaine ' + weekNum + ' / ' + weeks.length + '</span>'
-          + '<span>' + (plan.activeExam ? plan.activeExam + ' · ' : '') + 'Planning de révision · ' + plan.generatedAt.toLocaleDateString('fr-FR') + '</span>'
-          + '</div>';
-
-    html += '</div>';
+    html += '</div>'; // .week-grid
+    html += '</div>'; // .week-page
   });
 
   root.innerHTML = html;

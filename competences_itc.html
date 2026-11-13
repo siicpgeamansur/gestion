@@ -60,6 +60,21 @@ button,input,select,textarea{font:inherit;color:inherit}
 .pbody{overflow:auto;padding:12px;flex:1;min-height:0}
 .small{font-size:12px;color:var(--muted);margin:0 0 9px}
 .mono{font-family:var(--font-mono);font-size:12.5px}
+/* simulateurs */
+.tools-row{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tool-pill{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border:1px solid var(--accent);border-radius:14px;background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;font-size:12px;font-weight:500;line-height:1.4}
+.tool-pill:hover{background:var(--accent);color:var(--accent-fg)}
+.tool-card{border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin:8px 0;background:var(--panel)}
+.tool-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tool-title{font-weight:600;color:var(--accent-ink);text-decoration:none;font-size:14.5px}
+.tool-title:hover{text-decoration:underline}
+.tool-file{color:var(--muted);font-size:11.5px;word-break:break-all}
+.tool-desc{font-size:13.5px;color:var(--muted);margin:4px 0 6px}
+.tool-comps{display:flex;gap:5px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+.chip-mini{border:1px solid var(--line);border-radius:6px;padding:1px 7px;background:var(--panel2);cursor:pointer;font-family:var(--font-mono);font-size:11.5px}
+.chip-mini:hover{border-color:var(--accent);background:var(--accent-soft)}
+.repo-link{color:var(--accent-ink);text-decoration:none;font-family:var(--font-mono);font-size:12px;word-break:break-all}
+.repo-link:hover{text-decoration:underline}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:60;max-width:90vw}
 #dlg{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
 .dlgbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(640px,100%);max-height:88%;display:flex;flex-direction:column}
@@ -271,7 +286,6 @@ const DATA = {
     }
   ],
   comps: {
-    /* Bases de la programmation (S1) */
     'BAS-01': { t: 'Mettre en place un environnement de travail et une discipline de programmation.', k: ['Spécification des fonctions, annotations et commentaires.', 'Jeux de tests.'], s: 'S1', d: 'CON' },
     'BAS-02': { t: 'Lire et écrire des fichiers de données simples en Python.', k: ['open, read, readline, readlines, split, write, close.'], s: 'S1', d: 'MEP' },
     'BAS-03': { t: 'Utiliser les structures de contrôle (if, while, for) et les types de base.', k: ['Entiers, flottants, booléens, chaînes, tuples, listes.'], s: 'S1', d: 'MEP' },
@@ -279,8 +293,6 @@ const DATA = {
     'BAS-05': { t: 'Écrire et utiliser des fonctions, y compris récursives.', k: ['Définition, appel, return.', 'Récursivité, limite de la pile d’appels.'], s: 'S1', d: 'CON' },
     'BAS-06': { t: 'Utiliser des modules et des bibliothèques externes.', k: ['Importation, documentation.'], s: 'S1', d: 'MEP' },
     'BAS-07': { t: 'Produire une représentation graphique simple (histogramme, etc.).', k: [], s: 'S1', d: 'COM' },
-
-    /* Algorithmique classique (S1) */
     'ALG-01': { t: 'Mettre en œuvre une recherche séquentielle et une recherche dichotomique.', k: ['Complexité linéaire vs logarithmique.'], s: 'S1', d: 'CON' },
     'ALG-02': { t: 'Calculer un extremum et compter les éléments d’un tableau.', k: ['Maximum, second maximum.'], s: 'S1', d: 'MEP' },
     'ALG-03': { t: 'Implémenter un tri quadratique (insertion, sélection, à bulles).', k: ['Complexité quadratique.'], s: 'S1', d: 'CON' },
@@ -288,29 +300,21 @@ const DATA = {
     'ALG-05': { t: 'Implémenter un tri par comptage.', k: ['Tri non comparatif.'], s: 'S1', d: 'CON' },
     'ALG-06': { t: 'Concevoir un algorithme glouton et en évaluer la pertinence.', k: ['Rendu de monnaie, allocation de salles, sélection d’activités.', 'Limites : solution non optimale.'], s: 'S1', d: 'CON' },
     'ALG-07': { t: 'Comparer les caractéristiques des algorithmes de tri (stabilité, en place, comparatif).', k: [], s: 'S1', d: 'JUS' },
-
-    /* Complexité & validation (S1–S2) */
     'CPX-01': { t: 'Estimer la complexité temporelle dans le pire cas en ordre de grandeur.', k: ['Coût constant, linéaire, quadratique, logarithmique.'], s: 'S1', d: 'JUS' },
     'CPX-02': { t: 'Distinguer complexité en temps et complexité en espace.', k: [], s: 'S2', d: 'JUS' },
     'CPX-03': { t: 'Démontrer la terminaison d’un algorithme à l’aide d’un variant.', k: ['Variant de boucle.'], s: 'S2', d: 'JUS' },
     'CPX-04': { t: 'Démontrer la correction partielle d’un algorithme à l’aide d’un invariant.', k: ['Invariant de boucle.'], s: 'S2', d: 'JUS' },
     'CPX-05': { t: 'Écrire un jeu de tests et utiliser des assertions pour valider un programme.', k: ['Préconditions, postconditions, partitionnement des domaines.'], s: 'S2', d: 'JUS' },
-
-    /* Représentation des données (S2) */
     'DON-01': { t: 'Représenter les entiers positifs et signés sur des mots de taille fixe.', k: ['Complément à deux.'], s: 'S2', d: 'MOD' },
     'DON-02': { t: 'Distinguer entiers machine et entiers multi-précision de Python.', k: [], s: 'S2', d: 'MOD' },
     'DON-03': { t: 'Représenter les nombres flottants (mantisse, exposant) et connaître leurs limites.', k: ['Précision, arrondis, comparaisons.'], s: 'S2', d: 'MOD' },
     'DON-04': { t: 'Expliquer le principe du hachage et les limitations des clés utilisables.', k: [], s: 'S3', d: 'MOD' },
     'DON-05': { t: 'Utiliser des dictionnaires pour mémoriser des résultats intermédiaires.', k: ['Syntaxe, parcours, copy.'], s: 'S3', d: 'MEP' },
-
-    /* Graphes & chemins (S2) */
     'GRA-01': { t: 'Utiliser le vocabulaire des graphes (orienté/non orienté, sommet, arc, degré, chemin, cycle, connexité).', k: [], s: 'S2', d: 'MOD' },
     'GRA-02': { t: 'Représenter un graphe par listes d’adjacence ou matrice d’adjacence.', k: [], s: 'S2', d: 'MOD' },
     'GRA-03': { t: 'Parcourir un graphe en largeur ou en profondeur (piles et files).', k: ['Utilisation de collections.deque.'], s: 'S2', d: 'CON' },
     'GRA-04': { t: 'Détecter un cycle ou la connexité d’un graphe non orienté.', k: [], s: 'S2', d: 'CON' },
     'GRA-05': { t: 'Calculer un plus court chemin avec l’algorithme de Dijkstra.', k: ['File de priorité naïve.', 'Sensibilisation à A* et aux heuristiques.'], s: 'S2', d: 'CON' },
-
-    /* Bases de données (S3) */
     'BDD-01': { t: 'Utiliser le vocabulaire des bases de données relationnelles.', k: ['Tables, attributs, domaine, schéma, enregistrements, clé primaire, clé étrangère.'], s: 'S3', d: 'MOD' },
     'BDD-02': { t: 'Lire et produire un diagramme entité–association simple (1–1, 1–∗, ∗–∗).', k: [], s: 'S3', d: 'MOD' },
     'BDD-03': { t: 'Écrire une requête SELECT avec projection, sélection (WHERE) et renommage (AS).', k: ['Opérateurs de comparaison et logiques.'], s: 'S3', d: 'CON' },
@@ -319,8 +323,6 @@ const DATA = {
     'BDD-06': { t: 'Utiliser les opérateurs ensemblistes UNION, INTERSECT, EXCEPT et le produit cartésien.', k: [], s: 'S3', d: 'CON' },
     'BDD-07': { t: 'Utiliser les agrégats (MIN, MAX, SUM, AVG, COUNT) avec GROUP BY et HAVING.', k: ['Différence entre WHERE et HAVING.'], s: 'S3', d: 'CON' },
     'BDD-08': { t: 'Écrire une requête imbriquée simple.', k: [], s: 'S3', d: 'CON' },
-
-    /* Programmation dynamique & IA (S3) */
     'DYN-01': { t: 'Identifier une propriété de sous-structure optimale et un chevauchement de sous-problèmes.', k: [], s: 'S3', d: 'MOD' },
     'DYN-02': { t: 'Mettre en œuvre une programmation dynamique par mémoïsation ou calcul de bas en haut.', k: ['Mémoïsation avec un dictionnaire.', 'Reconstruction d’une solution optimale.'], s: 'S3', d: 'CON' },
     'DYN-03': { t: 'Appliquer la programmation dynamique à des problèmes classiques.', k: ['Partition équilibrée, ordonnancement, plus longue sous-suite commune, distance d’édition, Floyd-Warshall.'], s: 'S3', d: 'MEP' },
@@ -347,6 +349,78 @@ THEMES.forEach(t => t.items.forEach(i => { (THEMES_OF[i.id] = THEMES_OF[i.id] ||
 const themeByKey = k => THEMES.find(t => t.key === k);
 const idsOf = t => [...new Set(t.items.map(i => i.id))];
 const ALL_IDS = Object.keys(COMPS).sort();
+
+/* ---------- ressources externes (simulateurs GitHub) ---------- */
+const REPOS = {
+  itc: { name: 'ITC · Informatique pour Tous', url: 'https://siicpgeamansur.github.io/ITC/' }
+};
+function toolUrl(t) { return REPOS[t.repo].url + t.file; }
+
+const TOOLS = {
+  /* --- Bases de la programmation --- */
+  'BAS-04': [{ repo:'itc', file:'matrices_de_pixels_images.html', title:'Matrices de pixels et images', desc:'Manipuler des tableaux et images comme matrices.' }],
+  'BAS-05': [{ repo:'itc', file:'recursivite.html', title:'Récursivité', desc:'Concepts de base de la récursivité.' }],
+  'BAS-06': [{ repo:'itc', file:'modules_bibliotheques.html', title:'Modules et bibliothèques', desc:'Importer et utiliser des modules Python.' }],
+  /* --- Algorithmique classique --- */
+  'ALG-01': [
+    { repo:'itc', file:'recherche_sequentielle_boucles_imbriquees.html', title:'Recherche séquentielle', desc:'Boucles imbriquées et recherche séquentielle.' },
+    { repo:'itc', file:'dichotomie.html', title:'Dichotomie', desc:'Recherche dichotomique.' }
+  ],
+  'ALG-02': [{ repo:'itc', file:'recherche_sequentielle_boucles_imbriquees.html', title:'Recherche séquentielle', desc:'Extremum et comptage.' }],
+  'ALG-03': [{ repo:'itc', file:'algorithmes_tri.html', title:'Algorithmes de tri', desc:'Tris quadratiques (insertion, sélection, bulles).' }],
+  'ALG-04': [{ repo:'itc', file:'algorithmes_tri.html', title:'Algorithmes de tri', desc:'Tri fusion et tri rapide.' }],
+  'ALG-05': [{ repo:'itc', file:'algorithmes_tri.html', title:'Algorithmes de tri', desc:'Tri par comptage.' }],
+  'ALG-06': [{ repo:'itc', file:'algorithmes_gloutons.html', title:'Algorithmes gloutons', desc:'Principe glouton et applications.' }],
+  'ALG-07': [
+    { repo:'itc', file:'algorithmes_tri.html', title:'Algorithmes de tri', desc:'Comparaison des tris.' },
+    { repo:'itc', file:'methodes_analyse_algorithmes.html', title:'Méthodes d’analyse', desc:'Conception et analyse algorithmique.' }
+  ],
+  /* --- Complexité & validation --- */
+  'CPX-01': [{ repo:'itc', file:'methodes_analyse_algorithmes.html', title:'Méthodes d’analyse', desc:'Complexité asymptotique.' }],
+  'CPX-02': [{ repo:'itc', file:'methodes_analyse_algorithmes.html', title:'Méthodes d’analyse', desc:'Complexité en temps et en espace.' }],
+  /* --- Représentation des données --- */
+  'DON-01': [{ repo:'itc', file:'representation_entiers_flottants.html', title:'Entiers et flottants', desc:'Représentation machine des entiers.' }],
+  'DON-02': [{ repo:'itc', file:'representation_entiers_flottants.html', title:'Entiers et flottants', desc:'Entiers machine vs multi-précision.' }],
+  'DON-03': [{ repo:'itc', file:'representation_entiers_flottants.html', title:'Entiers et flottants', desc:'Représentation des flottants.' }],
+  'DON-04': [{ repo:'itc', file:'tables_de_hachage.html', title:'Tables de hachage', desc:'Principe du hachage.' }],
+  'DON-05': [{ repo:'itc', file:'tables_de_hachage.html', title:'Tables de hachage', desc:'Dictionnaires et mémorisation.' }],
+  /* --- Graphes & chemins --- */
+  'GRA-03': [
+    { repo:'itc', file:'dfs_bfs_dijkstra.html', title:'DFS / BFS / Dijkstra', desc:'Parcours en largeur et en profondeur.' },
+    { repo:'itc', file:'Parcours_de_graphes_animation.html', title:'Parcours de graphes (animation)', desc:'Animation des parcours de graphes.' }
+  ],
+  'GRA-04': [
+    { repo:'itc', file:'dfs_bfs_dijkstra.html', title:'DFS / BFS / Dijkstra', desc:'Détection de cycle et connexité.' },
+    { repo:'itc', file:'Parcours_de_graphes_animation.html', title:'Parcours de graphes (animation)', desc:'Connexité par parcours.' }
+  ],
+  'GRA-05': [{ repo:'itc', file:'dfs_bfs_dijkstra.html', title:'DFS / BFS / Dijkstra', desc:'Plus court chemin (Dijkstra, A*).' }],
+  /* --- Bases de données --- */
+  'BDD-01': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'Vocabulaire et modèle relationnel.' }],
+  'BDD-02': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'Diagrammes entité–association.' }],
+  'BDD-03': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'SELECT, WHERE, AS.' }],
+  'BDD-04': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'DISTINCT, ORDER BY, LIMIT.' }],
+  'BDD-05': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'Jointures internes.' }],
+  'BDD-06': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'Opérateurs ensemblistes.' }],
+  'BDD-07': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'Agrégats, GROUP BY, HAVING.' }],
+  'BDD-08': [{ repo:'itc', file:'sql.html', title:'SQL', desc:'Requêtes imbriquées.' }],
+  /* --- Programmation dynamique & IA --- */
+  'DYN-01': [{ repo:'itc', file:'programmation_dynamique.html', title:'Programmation dynamique', desc:'Sous-structure optimale et chevauchement.' }],
+  'DYN-02': [{ repo:'itc', file:'programmation_dynamique.html', title:'Programmation dynamique', desc:'Mémoïsation et calcul bottom-up.' }],
+  'DYN-03': [{ repo:'itc', file:'programmation_dynamique.html', title:'Programmation dynamique', desc:'Applications classiques (partition, ordonnancement…).' }],
+  'IA-01': [{ repo:'itc', file:'ia.html', title:'IA', desc:'k plus proches voisins, matrice de confusion.' }],
+  'IA-02': [{ repo:'itc', file:'ia.html', title:'IA', desc:'k-moyennes non supervisé.' }],
+  'IA-03': [{ repo:'itc', file:'theorie_des_jeux.html', title:'Théorie des jeux', desc:'Attracteurs et positions gagnantes.' }],
+  'IA-04': [{ repo:'itc', file:'theorie_des_jeux.html', title:'Théorie des jeux', desc:'Minimax et heuristiques.' }]
+};
+
+const ALL_TOOLS = [];
+(function() {
+  const seen = new Set();
+  Object.values(TOOLS).forEach(arr => arr.forEach(t => {
+    const k = t.repo + '/' + t.file;
+    if (!seen.has(k)) { seen.add(k); ALL_TOOLS.push(t); }
+  }));
+})();
 
 /* ---------- état ---------- */
 const S = (() => { const s = lsGet(KEY, {}); return { r: s.r || {}, n: s.n || {} }; })();
@@ -388,10 +462,12 @@ function renderSeg() {
     const c = tally(idsOf(t));
     seg.append(mk(t.key, (i + 1) + '. ' + t.title, c[3] + '/' + c.total));
   });
+  seg.append(mk('tools', '↗ Simulateurs', String(ALL_TOOLS.length)));
 }
 function mountWs() {
   const root = $('#ws'); root.innerHTML = '';
   if (UI.cur === 'home') { $('#hint').textContent = 'Votre carte des compétences en ITC. Cliquez sur une case pour aller la travailler.'; mountHome(root); }
+  else if (UI.cur === 'tools') { $('#hint').textContent = 'Simulateurs interactifs : chaque outil est relié aux compétences qu’il permet de travailler.'; mountTools(root); }
   else { $('#hint').textContent = 'Évaluez-vous honnêtement : « À revoir », « En cours » ou « Acquise ». Un second clic efface votre choix.'; mountTheme(root, themeByKey(UI.cur)); }
   const sc = $('#scroller'); if (sc) sc.scrollTop = 0;
 }
@@ -470,18 +546,28 @@ function compEl(id, t, it) {
     h('span', { class: 'tag' }, DOM[c.d] || c.d));
   const other = (THEMES_OF[id] || []).filter(k => k !== t.key);
   if (other.length) tags.append(h('span', { class: 'tag' }, 'aussi dans : ' + other.map(k => themeByKey(k).title).join(', ')));
-  el.append(
-    h('div', null,
-      h('div', { class: 'chead' }, h('span', { class: 'cid' }, id), h('span', { class: 'ctext' }, c.t)), tags),
+
+  const kids = [
+    h('div', null, h('div', { class: 'chead' }, h('span', { class: 'cid' }, id), h('span', { class: 'ctext' }, c.t)), tags),
     h('div', { class: 'rate', role: 'group', 'aria-label': 'Niveau pour ' + id },
-      [1, 2, 3].map(n => h('button', { type: 'button', 'data-l': n, 'aria-pressed': String(l === n), onclick: () => setLevel(id, n) }, LEVELS[n].n))));
+      [1, 2, 3].map(n => h('button', { type: 'button', 'data-l': n, 'aria-pressed': String(l === n), onclick: () => setLevel(id, n) }, LEVELS[n].n)))
+  ];
+
+  const tools = TOOLS[id] || [];
+  if (tools.length) {
+    kids.push(h('div', { class: 'tools-row', 'aria-label': 'Simulateurs associés' }, tools.map(tool =>
+      h('a', { class: 'tool-pill', href: toolUrl(tool), target: '_blank', rel: 'noopener', title: REPOS[tool.repo].name + ' · ' + tool.desc }, '↗ ', tool.title))));
+  }
+
   const det = h('details', null, h('summary', null, 'Connaissances associées et note personnelle'));
   if (c.k.length) det.append(h('ul', null, c.k.map(k => h('li', null, k))));
   else det.append(h('p', { class: 'small' }, 'Pas de connaissances détaillées pour cette compétence.'));
   const inp = h('input', { type: 'text', id: 'note-' + t.key + '-' + id, maxlength: 200, placeholder: 'Ex. refaire l’exercice, revoir le TD', value: S.n[id] || '', 'aria-label': 'Note personnelle ' + id });
   inp.addEventListener('input', () => { if (inp.value.trim()) S.n[id] = inp.value; else delete S.n[id]; save(); });
   det.append(h('label', { class: 'note' }, h('span', null, 'Ma note'), inp));
-  el.append(det);
+  kids.push(det);
+
+  el.append(...kids);
   return el;
 }
 function updateTop(t) {
@@ -526,6 +612,37 @@ function mountTheme(root, t) {
     root.append(sec);
   });
   if (!shown) root.append(h('p', { class: 'empty' }, 'Aucune compétence ne correspond à ces filtres.'));
+}
+
+/* ---------- page « Simulateurs » ---------- */
+function mountTools(root) {
+  root.append(
+    h('h2', null, 'Simulateurs interactifs'),
+    h('p', { class: 'lead' }, 'Une sélection de simulateurs en ligne pour expérimenter les notions du programme d’ITC. Chaque simulateur est relié aux compétences qu’il permet de travailler.')
+  );
+  Object.keys(REPOS).forEach(repo => {
+    const r = REPOS[repo];
+    const repoTools = ALL_TOOLS.filter(t => t.repo === repo);
+    if (!repoTools.length) return;
+    root.append(
+      h('h3', null, r.name),
+      h('p', { class: 'small' }, 'Dépôt : ',
+        h('a', { class: 'repo-link', href: r.url, target: '_blank', rel: 'noopener' }, r.url))
+    );
+    repoTools.forEach(t => {
+      const comps = Object.keys(TOOLS).filter(cid => TOOLS[cid].some(x => x.repo === t.repo && x.file === t.file));
+      root.append(h('div', { class: 'tool-card' },
+        h('div', { class: 'tool-head' },
+          h('a', { class: 'tool-title', href: toolUrl(t), target: '_blank', rel: 'noopener' }, t.title, ' ↗'),
+          h('span', { class: 'tool-file mono' }, t.file)),
+        h('p', { class: 'tool-desc' }, t.desc),
+        h('div', { class: 'tool-comps' },
+          h('span', null, 'Compétences : '),
+          comps.map(cid => h('button', { type: 'button', class: 'chip-mini', onclick: () => gotoWs(THEMES_OF[cid][0], cid) }, cid))
+        )
+      ));
+    });
+  });
 }
 
 /* ---------- panneau « Mon bilan » ---------- */
@@ -613,7 +730,7 @@ $('#bSave').addEventListener('click', () => {
 });
 $('#bHelp').addEventListener('click', () => {
   openDlg('Aide', h('div', { html: '<p>Cette page reprend les compétences du programme d’informatique commune (ITC) aux filières MP, PC, PSI et PT, sur les deux années de CPGE.</p>' +
-    '<h3>Utilisation</h3><ul><li>Ouvrez une thématique et choisissez pour chaque compétence : <b>À revoir</b>, <b>En cours</b> ou <b>Acquise</b>. Un second clic efface le choix.</li><li>Dépliez « Connaissances associées » pour voir ce que la compétence recouvre et ajouter une note.</li><li>Les filtres par semestre, niveau et chapitre aident à trier. S1 et S2 correspondent à la première année, S3 à la deuxième année.</li><li>« Vue d’ensemble » et « Mon bilan » montrent ce qui est acquis et ce qui reste à travailler.</li><li>Une compétence présente dans plusieurs thématiques garde le même niveau partout.</li></ul>' +
+    '<h3>Utilisation</h3><ul><li>Ouvrez une thématique et choisissez pour chaque compétence : <b>À revoir</b>, <b>En cours</b> ou <b>Acquise</b>. Un second clic efface le choix.</li><li>Dépliez « Connaissances associées » pour voir ce que la compétence recouvre et ajouter une note.</li><li>Les filtres par semestre, niveau et chapitre aident à trier. S1 et S2 correspondent à la première année, S3 à la deuxième année.</li><li><b>Nouveau</b> : la pastille <code>↗ Nom du simulateur</code> ouvre directement un simulateur interactif relié à la compétence (dépôt <i>ITC</i>). L’onglet <b>↗ Simulateurs</b> liste tous les outils du dépôt.</li><li>« Vue d’ensemble » et « Mon bilan » montrent ce qui est acquis et ce qu’il reste à travailler.</li></ul>' +
     '<h3>Vos données</h3><p>Les évaluations sont mémorisées dans ce navigateur uniquement. Le bouton « Sauvegarde » donne un code à copier, pour changer d’appareil ou envoyer un résumé à votre professeur.</p>' }));
 });
 

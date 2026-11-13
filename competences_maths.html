@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Suivi des compétences · Mathématiques PCSI/PSI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* ... (le CSS est identique à la version précédente) ... */
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{
+  --font-ui:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --bg:#ffffff;--bar:#eeeeee;--panel:#ffffff;--panel2:#f1f3f6;--field:#ffffff;--line:#b9bfc7;
+  --fg:#111111;--muted:#5a6068;--accent:#2e6da4;--accent-fg:#ffffff;--accent-soft:#dcebf8;--accent-ink:#1b4a76;
+  --ok:#1e7a2e;--warn:#9a5b00;--bad:#c0281f;
+  --ok-soft:rgba(30,122,46,.15);--warn-soft:rgba(154,91,0,.14);--bad-soft:rgba(192,40,31,.13);
+  --overlay:rgba(10,16,22,.55);--shadow:rgba(0,0,0,.28);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#14181d;--bar:#1d232a;--panel:#191e24;--panel2:#212830;--field:#14181d;--line:#3b4551;
+  --fg:#e8ecf0;--muted:#9ba6b2;--accent:#5b9bd5;--accent-fg:#0b1620;--accent-soft:#203449;--accent-ink:#b3d4f2;
+  --ok:#62c673;--warn:#e3a94f;--bad:#f2766d;
+  --ok-soft:rgba(98,198,115,.18);--warn-soft:rgba(227,169,79,.17);--bad-soft:rgba(242,118,109,.17);
+  --overlay:rgba(0,0,0,.65);--shadow:rgba(0,0,0,.6);color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 var(--font-ui)}
+button,input,select,textarea{font:inherit;color:inherit}
+.inner{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#app{height:100%;display:flex;flex-direction:column;min-height:0}
+.band{background:var(--bar);border-bottom:1px solid var(--line);flex:none}
+.row{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding-block:7px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;letter-spacing:.01em}
+.brand small{font-weight:400;color:var(--muted);font-size:13px}
+.files{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn{font-weight:500;font-size:13px;padding:6px 11px;border:1px solid var(--line);background:var(--panel);border-radius:7px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.pri{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.sm{padding:3px 8px;font-size:12px}
+:is(button,input,select,textarea,summary):focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;background:var(--panel);max-width:100%;overflow-x:auto}
+.seg button{border:0;background:transparent;padding:7px 14px;font-weight:500;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
+.seg .cnt{font:500 11px var(--font-mono);opacity:.8}
+.work{flex:1;min-height:0;display:flex;gap:10px;padding-block:10px}
+#stage{flex:1;min-width:0;position:relative;border:1px solid var(--line);border-radius:10px;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+#hint{flex:none;padding:6px 12px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);background:var(--bar)}
+#scroller{flex:1;min-height:0;overflow:auto}
+.phead{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);flex:none}
+.phead b{font-size:15px}
+.phead .sub{color:var(--muted);font-size:12.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:2px;padding:6px 8px 0;border-bottom:1px solid var(--line);overflow-x:auto;flex:none}
+.tabs button{border:0;border-bottom:2px solid transparent;background:transparent;padding:6px 10px;font-weight:500;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.pbody{overflow:auto;padding:12px;flex:1;min-height:0}
+.small{font-size:12px;color:var(--muted);margin:0 0 9px}
+.mono{font-family:var(--font-mono);font-size:12.5px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:60;max-width:90vw}
+#dlg{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlgbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(640px,100%);max-height:88%;display:flex;flex-direction:column}
+.dlgbox header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dlgbox header b{font-size:16px}
+.dlgbox .dbody{padding:14px 16px;overflow:auto}
+.dlgbox h3{margin:14px 0 4px;font-size:14px}.dlgbox p,.dlgbox li{margin:4px 0;font-size:13.5px}
+.dlgbox textarea{width:100%;min-height:96px;background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:12px/1.5 var(--font-mono);resize:vertical}
+/* panneau bilan */
+#act{flex:none;width:clamp(290px,25vw,350px);display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-height:0;max-height:100%}
+#act .pbody{font-size:13.5px}
+.goal{background:var(--accent-soft);color:var(--accent-ink);border-radius:8px;padding:8px 10px;margin:0 0 10px}
+.todo{display:flex;flex-direction:column;gap:5px;margin:8px 0 0}
+.todo button{display:flex;gap:8px;align-items:baseline;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:6px 8px;cursor:pointer;font-size:13px}
+.todo button:hover{border-color:var(--accent)}
+.todo .tt{flex:1;min-width:0}
+.todo .where{display:block;font-size:11.5px;color:var(--muted)}
+.empty{color:var(--muted);font-size:13px;padding:6px 2px}
+/* pages */
+#ws{padding:16px max(16px,env(safe-area-inset-left,0px)) 34px;max-width:1000px}
+#ws h2{font-size:24px;margin:0 0 6px;text-wrap:balance}
+#ws h3{font-size:16.5px;margin:26px 0 6px;text-wrap:balance}
+#ws p{font-size:14.5px;line-height:1.55;margin:4px 0 8px}
+.lead{color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:4px 11px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}.chip.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.filters{display:grid;grid-template-columns:max-content 1fr;gap:2px 12px;align-items:center;margin:10px 0 4px}
+.filters .lbl{font-size:12.5px;color:var(--muted)}
+.gstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0 8px}
+.stat{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel);display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat span{font-size:12px;color:var(--muted)}.stat b{font-size:15px;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.stat.ok b{color:var(--ok)}.stat.warn b{color:var(--warn)}.stat.bad b{color:var(--bad)}
+.bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--panel2);border:1px solid var(--line)}
+.bar i{display:block;height:100%}
+.bar .b-ok{background:var(--ok)}.bar .b-warn{background:var(--warn)}.bar .b-bad{background:var(--bad)}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1.6px solid var(--line);vertical-align:-2px;margin-right:5px;background:var(--panel2)}
+.leg i.ok{background:var(--ok-soft);border-color:var(--ok)}.leg i.warn{background:var(--warn-soft);border-color:var(--warn)}.leg i.bad{background:var(--bad-soft);border-color:var(--bad)}
+.leg i.none{border-style:dashed}
+/* groupes et compétences */
+.grp{margin:20px 0 0}
+.grp>h3{display:flex;align-items:baseline;gap:10px;margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line);font-size:15.5px}
+.grp>h3 .n{font:500 12px var(--font-mono);color:var(--muted)}
+.comp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:start;border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin:0 0 7px;background:var(--panel)}
+.comp.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 3px transparent}}
+.chead{display:flex;gap:8px;align-items:baseline;min-width:0}
+.cid{flex:none;font:500 12px var(--font-mono);padding:1px 6px;border-radius:5px;border:1px solid var(--line);background:var(--panel2)}
+.comp[data-l="1"] .cid{background:var(--bad-soft);border-color:var(--bad)}
+.comp[data-l="2"] .cid{background:var(--warn-soft);border-color:var(--warn)}
+.comp[data-l="3"] .cid{background:var(--ok-soft);border-color:var(--ok)}
+.ctext{font-size:14px;font-weight:500;min-width:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:11.5px;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:10px;padding:0 7px}
+.rate{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:start}
+.rate button{border:0;background:var(--panel);padding:6px 11px;font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.rate button+button{border-left:1px solid var(--line)}
+.rate button:hover{background:var(--panel2)}
+.rate button[aria-pressed="true"][data-l="1"]{background:var(--bad);color:var(--bg)}
+.rate button[aria-pressed="true"][data-l="2"]{background:var(--warn);color:var(--bg)}
+.rate button[aria-pressed="true"][data-l="3"]{background:var(--ok);color:var(--bg)}
+.comp details{grid-column:1/-1;font-size:13px}
+.comp summary{cursor:pointer;color:var(--accent-ink);font-weight:500;width:max-content;max-width:100%}
+.comp ul{margin:6px 0 4px;padding-left:20px}.comp li{margin:2px 0;font-size:13px;color:var(--muted)}
+.note{display:flex;gap:8px;align-items:center;margin-top:6px}
+.note span{font-size:12px;color:var(--muted);flex:none}
+.note input{flex:1;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+/* vue d'ensemble */
+.brow{display:grid;grid-template-columns:minmax(120px,210px) 1fr auto;gap:10px;align-items:center;padding:5px 0;border:0;background:none;width:100%;text-align:left;cursor:pointer;border-radius:6px}
+.brow:hover{background:var(--panel2)}
+.brow .nm{font-size:13.5px;font-weight:500;min-width:0}
+.brow .ct{min-width:58px;text-align:right;font:12px var(--font-mono);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:5px;margin:6px 0 4px}
+.tile{border:1px solid var(--line);border-style:dashed;background:var(--panel2);border-radius:5px;padding:4px 0;font:500 11.5px var(--font-mono);text-align:center;cursor:pointer;color:var(--fg)}
+.tile[data-l="1"]{background:var(--bad-soft);border:1px solid var(--bad)}
+.tile[data-l="2"]{background:var(--warn-soft);border:1px solid var(--warn)}
+.tile[data-l="3"]{background:var(--ok-soft);border:1px solid var(--ok)}
+.tile:hover{outline:2px solid var(--accent);outline-offset:1px}
+.mapdom{font-size:12.5px;font-weight:600;margin:12px 0 2px;color:var(--muted)}
+@media (max-width:820px){
+  #act{position:fixed;left:0;right:0;bottom:0;width:auto;height:70%;max-height:none;border-radius:14px 14px 0 0;z-index:35;box-shadow:0 -8px 30px var(--shadow);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .work{flex-direction:column;gap:8px}
+  .comp{grid-template-columns:minmax(0,1fr)}
+  .rate{width:100%}.rate button{flex:1;padding:8px 4px}
+  .brow{grid-template-columns:1fr auto}.brow .bar{grid-column:1/-1;grid-row:2}
+  .filters{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.btn{transition:border-color .12s,background .12s}}
+@media (prefers-reduced-motion:reduce){.comp.flash{animation:none;box-shadow:0 0 0 3px var(--accent)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="band"><div class="inner row">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="2" width="22" height="22" fill="none" stroke="var(--fg)" stroke-width="1.6"/><rect x="6" y="6" width="14" height="14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><rect x="9.5" y="9.5" width="7" height="7" fill="none" stroke="var(--ok)" stroke-width="1.6"/><rect x="12" y="12" width="2" height="2" fill="var(--warn)"/></svg>
+      <span>Suivi des compétences <small>Mathématiques · PCSI / PSI</small></span>
+    </div>
+    <div class="files">
+      <button class="btn" id="bAct" type="button" aria-pressed="false">Mon bilan</button>
+      <button class="btn" id="bTheme" type="button" aria-pressed="false">Mode sombre</button>
+      <button class="btn" id="bSave" type="button">Sauvegarde</button>
+      <button class="btn" id="bHelp" type="button">Aide</button>
+    </div>
+  </div></header>
+  <div class="band" id="modes"><div class="inner row"><div class="seg" id="wsSeg" role="tablist" aria-label="Thématiques"></div></div></div>
+  <main class="inner work" id="work">
+    <section id="stage"><div id="hint"></div><div id="scroller"><div id="ws"></div></div></section>
+    <aside id="act" hidden aria-label="Mon bilan"></aside>
+  </main>
+</div>
+<div id="dlg" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+'use strict';
+const $ = (s, r) => (r || document).querySelector(s);
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v === false || v == null) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (v === true) el.setAttribute(k, '');
+    else el.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : document.createTextNode(k));
+  return el;
+}
+function isSmall() { try { return window.matchMedia('(max-width:820px)').matches; } catch (e) { return false; } }
+const KEY = 'suivi-competences-maths-pcsi-psi-v1';
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* stockage indisponible */ } }
+
+/* ---------- programme (PCSI + PSI) ---------- */
+const DATA = {
+  dom: {
+    C:  'Chercher',
+    M:  'Modéliser',
+    R:  'Représenter',
+    Ra: 'Raisonner / Argumenter',
+    Ca: 'Calculer',
+    Co: 'Communiquer'
+  },
+  fam: {
+    LOG: 'Logique et ensembles',
+    ALG: 'Algèbre et calcul',
+    ANA: 'Analyse',
+    PRO: 'Probabilités',
+    RED: 'Réduction et algèbre bilinéaire',
+    ANA2: 'Analyse approfondie',
+    TRA: 'Compétences transversales'
+  },
+  themes: [
+    {
+      key: 'raisonnement',
+      title: 'Raisonnement & ensembles',
+      axes: ['Logique', 'Ensembles et applications'],
+      items: [
+        { id: 'LOG-01', ax: [0] }, { id: 'LOG-02', ax: [0] }, { id: 'LOG-03', ax: [0] },
+        { id: 'ENS-01', ax: [1] }, { id: 'ENS-02', ax: [1] }, { id: 'ENS-03', ax: [1] }, { id: 'ENS-04', ax: [1] }
+      ]
+    },
+    {
+      key: 'algebre',
+      title: 'Algèbre & calcul',
+      axes: ['Nombres complexes', 'Polynômes', 'Matrices et déterminants', 'Espaces vectoriels'],
+      items: [
+        { id: 'CPX-01', ax: [0] }, { id: 'CPX-02', ax: [0] }, { id: 'CPX-03', ax: [0] },
+        { id: 'POL-01', ax: [1] }, { id: 'POL-02', ax: [1] }, { id: 'POL-03', ax: [1] },
+        { id: 'MAT-01', ax: [2] }, { id: 'MAT-02', ax: [2] }, { id: 'MAT-03', ax: [2] }, { id: 'MAT-04', ax: [2] },
+        { id: 'EV-01', ax: [3] }, { id: 'EV-02', ax: [3] }, { id: 'EV-03', ax: [3] }, { id: 'EV-04', ax: [3] }
+      ]
+    },
+    {
+      key: 'analyse',
+      title: 'Analyse',
+      axes: ['Suites et limites', 'Continuité et dérivabilité', 'Intégration', 'Analyse asymptotique'],
+      items: [
+        { id: 'SUI-01', ax: [0] }, { id: 'SUI-02', ax: [0] }, { id: 'SUI-03', ax: [0] },
+        { id: 'LIM-01', ax: [1] }, { id: 'LIM-02', ax: [1] }, { id: 'LIM-03', ax: [1] },
+        { id: 'INT-01', ax: [2] }, { id: 'INT-02', ax: [2] }, { id: 'INT-03', ax: [2] },
+        { id: 'ASY-01', ax: [3] }, { id: 'ASY-02', ax: [3] }
+      ]
+    },
+    {
+      key: 'probabilites',
+      title: 'Probabilités',
+      axes: ['Dénombrement', 'Probabilités finies', 'Variables aléatoires'],
+      items: [
+        { id: 'DEN-01', ax: [0] }, { id: 'DEN-02', ax: [0] },
+        { id: 'PRO-01', ax: [1] }, { id: 'PRO-02', ax: [1] }, { id: 'PRO-03', ax: [1] },
+        { id: 'VAR-01', ax: [2] }, { id: 'VAR-02', ax: [2] }, { id: 'VAR-03', ax: [2] },
+        /* PSI : variables aléatoires discrètes */
+        { id: 'VAR-04', ax: [2] }, { id: 'VAR-05', ax: [2] }
+      ]
+    },
+    {
+      key: 'reduction',
+      title: 'Réduction & algèbre bilinéaire',
+      axes: ['Réduction des endomorphismes', 'Espaces préhilbertiens et euclidiens'],
+      items: [
+        { id: 'RED-01', ax: [0] }, { id: 'RED-02', ax: [0] }, { id: 'RED-03', ax: [0] }, { id: 'RED-04', ax: [0] },
+        { id: 'RED-05', ax: [0] }, /* PSI : polynômes d'endomorphismes, trace, interpolation de Lagrange */
+        { id: 'BIL-01', ax: [1] }, { id: 'BIL-02', ax: [1] }, { id: 'BIL-03', ax: [1] }, { id: 'BIL-04', ax: [1] },
+        { id: 'BIL-05', ax: [1] } /* PSI : isométries vectorielles, endomorphismes autoadjoints positifs */
+      ]
+    },
+    {
+      key: 'analyse2',
+      title: 'Analyse approfondie',
+      axes: ['Séries et séries entières', 'Intégrales généralisées', 'Équations différentielles', 'Calcul différentiel'],
+      items: [
+        { id: 'SER-01', ax: [0] }, { id: 'SER-02', ax: [0] }, { id: 'SER-03', ax: [0] },
+        { id: 'SER-04', ax: [0] }, /* PSI : suites et séries de fonctions */
+        { id: 'IGE-01', ax: [1] }, { id: 'IGE-02', ax: [1] }, { id: 'IGE-03', ax: [1] },
+        { id: 'EQD-01', ax: [2] }, { id: 'EQD-02', ax: [2] }, { id: 'EQD-03', ax: [2] },
+        { id: 'CAL-01', ax: [3] }, { id: 'CAL-02', ax: [3] }
+      ]
+    },
+    {
+      key: 'transversal',
+      title: 'Compétences transversales',
+      axes: [],
+      items: [
+        { id: 'TRA-01', ax: [] }, { id: 'TRA-02', ax: [] }, { id: 'TRA-03', ax: [] },
+        { id: 'TRA-04', ax: [] }, { id: 'TRA-05', ax: [] }, { id: 'TRA-06', ax: [] }
+      ]
+    }
+  ],
+  comps: {
+    /* Raisonnement & ensembles (PCSI) */
+    'LOG-01': { t: 'Utiliser les connecteurs logiques et les quantificateurs.', k: ['Négation, conjonction, disjonction, implication, équivalence.', 'Quantificateurs ∀ et ∃.'], s: 'S1' },
+    'LOG-02': { t: 'Distinguer condition nécessaire, suffisante, nécessaire et suffisante.', k: [], s: 'S1' },
+    'LOG-03': { t: 'Mener un raisonnement par contraposée, par l’absurde ou par récurrence.', k: ['Récurrence simple et double.'], s: 'S1' },
+    'ENS-01': { t: 'Manipuler les opérations sur les ensembles.', k: ['Union, intersection, complémentaire, produit cartésien.'], s: 'S1' },
+    'ENS-02': { t: 'Définir et utiliser une application, une injection, une surjection, une bijection.', k: ['Image directe et réciproque, composition.'], s: 'S1' },
+    'ENS-03': { t: 'Utiliser les relations d’ordre et d’équivalence.', k: ['Relation binaire, classes d’équivalence.', 'Relation d’ordre, majorant, minorant.'], s: 'S1' },
+    'ENS-04': { t: 'Manipuler les entiers, la divisibilité, le PGCD et le PPCM.', k: ['Division euclidienne, congruences.'], s: 'S1' },
+
+    /* Algèbre & calcul (PCSI) */
+    'CPX-01': { t: 'Effectuer les calculs algébriques dans ℂ.', k: ['Forme algébrique, conjugué, module, argument.'], s: 'S1' },
+    'CPX-02': { t: 'Résoudre une équation du second degré à coefficients complexes.', k: ['Racines carrées d’un nombre complexe.'], s: 'S1' },
+    'CPX-03': { t: 'Interpréter géométriquement les nombres complexes et utiliser la trigonométrie.', k: ['Formules d’Euler et de Moivre, linéarisation.'], s: 'S1' },
+    'POL-01': { t: 'Manipuler les polynômes : degré, somme, produit, composition.', k: ['Polynômes à une indéterminée sur ℝ ou ℂ.'], s: 'S1' },
+    'POL-02': { t: 'Effectuer la division euclidienne et utiliser les racines d’un polynôme.', k: ['Division euclidienne, multiplicité.'], s: 'S1' },
+    'POL-03': { t: 'Décomposer un polynôme en facteurs irréductibles sur ℝ ou ℂ.', k: ['Théorème de d’Alembert-Gauss.'], s: 'S1' },
+    'MAT-01': { t: 'Maîtriser le calcul matriciel.', k: ['Somme, produit, transposée, inverse.'], s: 'S1' },
+    'MAT-02': { t: 'Résoudre un système linéaire par la méthode du pivot de Gauss.', k: ['Échelonnement, rang.'], s: 'S1' },
+    'MAT-03': { t: 'Calculer un déterminant et utiliser ses propriétés.', k: ['Multilinéarité, déterminant du produit.'], s: 'S2' },
+    'MAT-04': { t: 'Relier matrices et applications linéaires.', k: ['Matrice d’une application linéaire, changement de base.'], s: 'S2' },
+    'EV-01': { t: 'Reconnaître un espace vectoriel et une base.', k: ['Familles libres, génératrices, bases, dimension.'], s: 'S2' },
+    'EV-02': { t: 'Déterminer le rang d’une famille de vecteurs ou d’une application linéaire.', k: ['Théorème du rang.'], s: 'S2' },
+    'EV-03': { t: 'Manipuler les applications linéaires (noyau, image, composée).', k: ['Noyau, image, rang.'], s: 'S2' },
+    'EV-04': { t: 'Utiliser les espaces supplémentaires et les projections.', k: ['Somme directe, projecteurs, symétries.'], s: 'S2' },
+
+    /* Analyse (PCSI) */
+    'SUI-01': { t: 'Étudier la convergence d’une suite réelle.', k: ['Théorème de convergence monotone, suites adjacentes.'], s: 'S1' },
+    'SUI-02': { t: 'Déterminer la limite d’une suite et utiliser les théorèmes de comparaison.', k: ['Théorème d’encadrement.'], s: 'S1' },
+    'SUI-03': { t: 'Utiliser les suites usuelles (arithmétiques, géométriques, récurrentes).', k: ['Suites récurrentes linéaires d’ordre 1 et 2.'], s: 'S1' },
+    'LIM-01': { t: 'Calculer des limites de fonctions et étudier la continuité.', k: ['Théorème des valeurs intermédiaires.'], s: 'S1' },
+    'LIM-02': { t: 'Dériver une fonction et utiliser le théorème des accroissements finis.', k: ['Théorème de Rolle, accroissements finis.'], s: 'S1' },
+    'LIM-03': { t: 'Étudier une fonction (variations, convexité, branches infinies).', k: ['Tableau de variations, convexité.'], s: 'S1' },
+    'INT-01': { t: 'Calculer une primitive et une intégrale.', k: ['Intégration par parties, changement de variable.'], s: 'S2' },
+    'INT-02': { t: 'Utiliser les propriétés de l’intégrale.', k: ['Linéarité, positivité, inégalité de la moyenne.'], s: 'S2' },
+    'INT-03': { t: 'Intégrer une fonction continue sur un segment.', k: ['Théorème fondamental du calcul intégral.'], s: 'S2' },
+    'ASY-01': { t: 'Effectuer un développement limité et un développement asymptotique.', k: ['Formules de Taylor, DL usuels.'], s: 'S2' },
+    'ASY-02': { t: 'Comparer des fonctions au voisinage d’un point.', k: ['Notations o et O, équivalents.'], s: 'S2' },
+
+    /* Probabilités (PCSI + PSI) */
+    'DEN-01': { t: 'Compter des listes, des arrangements, des combinaisons.', k: ['Principe additif et multiplicatif.'], s: 'S2' },
+    'DEN-02': { t: 'Utiliser les coefficients binomiaux et la formule du binôme.', k: ['Formule du binôme de Newton.'], s: 'S2' },
+    'PRO-01': { t: 'Définir un espace probabilisé fini et calculer des probabilités.', k: ['Univers, événements, équiprobabilité.'], s: 'S2' },
+    'PRO-02': { t: 'Utiliser les probabilités conditionnelles et l’indépendance.', k: ['Formule des probabilités totales.'], s: 'S2' },
+    'PRO-03': { t: 'Appliquer la formule de Bayes.', k: ['Formule de Bayes.'], s: 'S2' },
+    'VAR-01': { t: 'Définir une variable aléatoire réelle et sa loi.', k: ['Variable aléatoire discrète finie.'], s: 'S2' },
+    'VAR-02': { t: 'Calculer l’espérance et la variance d’une variable aléatoire.', k: ['Espérance, variance, écart type.'], s: 'S2' },
+    'VAR-03': { t: 'Reconnaître les lois usuelles (uniforme, Bernoulli, binomiale).', k: ['Lois uniforme, Bernoulli, binomiale.'], s: 'S2' },
+    'VAR-04': { t: 'Manipuler des variables aléatoires discrètes (dénombrables) et les familles sommables.', k: ['Ensembles dénombrables, familles sommables.', 'Loi d’une variable aléatoire discrète.'], s: 'S3' },
+    'VAR-05': { t: 'Utiliser la loi faible des grands nombres et les fonctions génératrices.', k: ['Loi faible des grands nombres.', 'Séries génératrices.'], s: 'S3' },
+
+    /* Réduction & algèbre bilinéaire (PSI) */
+    'RED-01': { t: 'Déterminer les valeurs propres et les vecteurs propres d’un endomorphisme.', k: ['Valeur propre, vecteur propre, sous-espace propre.'], s: 'S3' },
+    'RED-02': { t: 'Diagonaliser une matrice ou un endomorphisme.', k: ['Condition de diagonalisation, matrice de passage.'], s: 'S3' },
+    'RED-03': { t: 'Trigonaliser une matrice ou un endomorphisme.', k: ['Théorème de trigonalisation.'], s: 'S3' },
+    'RED-04': { t: 'Utiliser les polynômes d’endomorphismes et le lemme des noyaux.', k: ['Polynôme annulateur.'], s: 'S3' },
+    'RED-05': { t: 'Utiliser la trace, les matrices par blocs et l’interpolation de Lagrange.', k: ['Trace, relation tr(AB) = tr(BA).', 'Polynômes interpolateurs de Lagrange.'], s: 'S3' },
+    'BIL-01': { t: 'Définir un produit scalaire et une norme euclidienne.', k: ['Inégalité de Cauchy-Schwarz.'], s: 'S4' },
+    'BIL-02': { t: 'Orthogonaliser une famille de vecteurs (Gram-Schmidt).', k: ['Procédé de Gram-Schmidt.'], s: 'S4' },
+    'BIL-03': { t: 'Déterminer une projection orthogonale.', k: ['Projection orthogonale, distance à un sous-espace.'], s: 'S4' },
+    'BIL-04': { t: 'Diagonaliser un endomorphisme symétrique (théorème spectral).', k: ['Théorème spectral.'], s: 'S4' },
+    'BIL-05': { t: 'Étudier les isométries vectorielles et les endomorphismes autoadjoints positifs.', k: ['Isométries vectorielles, groupe orthogonal.', 'Endomorphismes autoadjoints positifs.'], s: 'S4' },
+
+    /* Analyse approfondie (PSI) */
+    'SER-01': { t: 'Étudier la convergence d’une série numérique.', k: ['Séries à termes positifs, convergence absolue.'], s: 'S3' },
+    'SER-02': { t: 'Déterminer le rayon de convergence d’une série entière.', k: ['Règle de d’Alembert.'], s: 'S3' },
+    'SER-03': { t: 'Développer une fonction en série entière.', k: ['Développements usuels, dérivation terme à terme.'], s: 'S3' },
+    'SER-04': { t: 'Étudier la convergence des suites et séries de fonctions.', k: ['Convergence simple, uniforme, normale.', 'Théorèmes de régularité.'], s: 'S3' },
+    'IGE-01': { t: 'Étudier la convergence d’une intégrale généralisée.', k: ['Critères de convergence.'], s: 'S3' },
+    'IGE-02': { t: 'Calculer une intégrale généralisée.', k: ['Intégration par parties, changement de variable.'], s: 'S3' },
+    'IGE-03': { t: 'Utiliser les intégrales à paramètre.', k: ['Continuité et dérivabilité sous le signe intégral.'], s: 'S3' },
+    'EQD-01': { t: 'Résoudre une équation différentielle linéaire du premier ordre.', k: ['Variation de la constante.'], s: 'S3' },
+    'EQD-02': { t: 'Résoudre une équation différentielle linéaire du second ordre à coefficients constants.', k: ['Équation homogène, solution particulière.'], s: 'S3' },
+    'EQD-03': { t: 'Résoudre un système différentiel linéaire X’ = AX.', k: ['Diagonalisation, exponentielle de matrice.'], s: 'S4' },
+    'CAL-01': { t: 'Calculer les dérivées partielles et la différentielle d’une fonction de plusieurs variables.', k: ['Gradient, différentielle.'], s: 'S4' },
+    'CAL-02': { t: 'Rechercher les extremums d’une fonction de deux variables.', k: ['Points critiques, matrice hessienne.'], s: 'S4' },
+
+    /* Transversales (PCSI + PSI) */
+    'TRA-01': { t: 'Chercher : explorer, conjecturer, expérimenter sur des exemples.', k: ['Formuler des hypothèses, tester sur des cas simples.'], s: 'S1' },
+    'TRA-02': { t: 'Modéliser : traduire un problème concret en langage mathématique.', k: ['Choisir les variables pertinentes, valider le modèle.'], s: 'S2' },
+    'TRA-03': { t: 'Représenter : passer d’un registre à un autre.', k: ['Choisir la représentation adaptée.'], s: 'S2' },
+    'TRA-04': { t: 'Raisonner et argumenter : construire une démonstration rigoureuse.', k: ['Enchaîner les implications, rédiger une preuve.'], s: 'S1' },
+    'TRA-05': { t: 'Calculer : mener un calcul complexe avec rigueur et contrôler les résultats.', k: ['Organiser les étapes, vérifier l’homogénéité.'], s: 'S1' },
+    'TRA-06': { t: 'Communiquer : rédiger et présenter une solution mathématique claire.', k: ['Utiliser un vocabulaire et des symboles adaptés.'], s: 'S1' }
+  }
+};
+const COMPS = DATA.comps, DOM = DATA.dom, THEMES = DATA.themes;
+const INFO = {
+  raisonnement: 'Logique, ensembles, applications, relations : le socle du raisonnement mathématique de première année.',
+  algebre: 'Nombres complexes, polynômes, calcul matriciel, déterminants et première approche de l’algèbre linéaire.',
+  analyse: 'Suites, limites, continuité, dérivabilité, intégration et analyse asymptotique : les fondements de l’analyse réelle.',
+  probabilites: 'Dénombrement, probabilités finies, variables aléatoires et lois usuelles (PCSI), puis variables aléatoires discrètes et loi faible des grands nombres (PSI).',
+  reduction: 'Réduction des endomorphismes, espaces préhilbertiens et euclidiens, isométries vectorielles et théorème spectral : le cœur de l’algèbre de deuxième année.',
+  analyse2: 'Séries, séries entières, suites et séries de fonctions, intégrales généralisées, équations différentielles et calcul différentiel.',
+  transversal: 'Les six compétences transversales du programme : chercher, modéliser, représenter, raisonner, calculer, communiquer.'
+};
+const LEVELS = [null, { n: 'À revoir', c: 'bad' }, { n: 'En cours', c: 'warn' }, { n: 'Acquise', c: 'ok' }];
+const semLabel = s => s + ' · ' + (s === 'S1' || s === 'S2' ? 'PCSI' : 'PSI');
+const THEMES_OF = {};
+THEMES.forEach(t => t.items.forEach(i => { (THEMES_OF[i.id] = THEMES_OF[i.id] || []).push(t.key); }));
+const themeByKey = k => THEMES.find(t => t.key === k);
+const idsOf = t => [...new Set(t.items.map(i => i.id))];
+const ALL_IDS = Object.keys(COMPS).sort();
+
+/* ---------- état ---------- */
+const S = (() => { const s = lsGet(KEY, {}); return { r: s.r || {}, n: s.n || {} }; })();
+function save() { lsSet(KEY, S); }
+const lvl = id => S.r[id] || 0;
+function tally(ids) {
+  const c = { 1: 0, 2: 0, 3: 0, 0: 0, total: ids.length };
+  ids.forEach(id => c[lvl(id)]++);
+  return c;
+}
+function barEl(c) {
+  const t = c.total || 1;
+  return h('div', { class: 'bar', role: 'img', 'aria-label': c[3] + ' acquises, ' + c[2] + ' en cours, ' + c[1] + ' à revoir, ' + c[0] + ' non évaluées' },
+    h('i', { class: 'b-ok', style: 'width:' + (c[3] / t * 100) + '%' }),
+    h('i', { class: 'b-warn', style: 'width:' + (c[2] / t * 100) + '%' }),
+    h('i', { class: 'b-bad', style: 'width:' + (c[1] / t * 100) + '%' }));
+}
+function statsEl(c) {
+  return h('div', { class: 'gstats' },
+    h('div', { class: 'stat ok' }, h('span', null, 'Acquises'), h('b', null, c[3] + ' / ' + c.total)),
+    h('div', { class: 'stat warn' }, h('span', null, 'En cours'), h('b', null, String(c[2]))),
+    h('div', { class: 'stat bad' }, h('span', null, 'À revoir'), h('b', null, String(c[1]))),
+    h('div', { class: 'stat' }, h('span', null, 'Non évaluées'), h('b', null, String(c[0]))));
+}
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2200);
+}
+
+/* ---------- navigation ---------- */
+const UI = { cur: 'home' };
+const F = { sem: 'all', st: 'all', ax: -1 };
+const AS = { open: false, tab: 'todo' };
+function renderSeg() {
+  const seg = $('#wsSeg'); seg.innerHTML = '';
+  const mk = (id, label, c) => h('button', { type: 'button', role: 'tab', 'aria-pressed': id === UI.cur ? 'true' : 'false', 'aria-selected': id === UI.cur ? 'true' : 'false', onclick: () => gotoWs(id) }, label, c ? h('span', { class: 'cnt' }, c) : null);
+  seg.append(mk('home', 'Vue d’ensemble'));
+  THEMES.forEach((t, i) => {
+    const c = tally(idsOf(t));
+    seg.append(mk(t.key, (i + 1) + '. ' + t.title, c[3] + '/' + c.total));
+  });
+}
+function mountWs() {
+  const root = $('#ws'); root.innerHTML = '';
+  if (UI.cur === 'home') { $('#hint').textContent = 'Votre carte des compétences en mathématiques (PCSI/PSI). Cliquez sur une case pour aller la travailler.'; mountHome(root); }
+  else { $('#hint').textContent = 'Évaluez-vous honnêtement : « À revoir », « En cours » ou « Acquise ». Un second clic efface votre choix.'; mountTheme(root, themeByKey(UI.cur)); }
+  const sc = $('#scroller'); if (sc) sc.scrollTop = 0;
+}
+function gotoWs(id, cid) {
+  UI.cur = id; F.sem = 'all'; F.st = 'all'; F.ax = -1;
+  renderSeg(); mountWs();
+  if (cid) {
+    const e = document.querySelector('[data-cid="' + cid + '"]');
+    if (e) { const d = e.querySelector('details'); if (d) d.open = true; e.scrollIntoView({ block: 'center' }); e.classList.add('flash'); }
+  }
+}
+function refresh() { renderSeg(); mountWs(); renderAct(); }
+
+/* ---------- vue d'ensemble ---------- */
+function bandRow(label, ids, onclick) {
+  const c = tally(ids);
+  return h('button', { type: 'button', class: 'brow', onclick },
+    h('span', { class: 'nm' }, label), barEl(c), h('span', { class: 'ct' }, c[3] + ' / ' + c.total));
+}
+function mountHome(root) {
+  const all = tally(ALL_IDS);
+  root.append(h('h2', null, 'Où en suis-je ?'),
+    h('p', { class: 'lead' }, 'Les compétences de mathématiques des deux années de CPGE (PCSI puis PSI) sont rangées en 7 thématiques. Évaluez chacune dans son onglet : cette page et le panneau « Mon bilan » vous montrent ce qui est acquis et ce qu’il reste à travailler.'),
+    statsEl(all), barEl(all));
+  root.append(h('h3', null, 'Par thématique'));
+  THEMES.forEach(t => root.append(bandRow(t.title, idsOf(t), () => gotoWs(t.key))));
+  root.append(h('h3', null, 'Par domaine de compétences'));
+  Object.keys(DOM).forEach(d => {
+    const ids = ALL_IDS.filter(i => COMPS[i].d === d);
+    if (!ids.length) return;
+    root.append(bandRow(d + ' · ' + DOM[d], ids, () => {
+      const f = ids.find(i => lvl(i) === 1) || ids.find(i => lvl(i) !== 3) || ids[0];
+      gotoWs(THEMES_OF[f][0], f);
+    }));
+  });
+  root.append(h('h3', null, 'Par semestre'));
+  ['S1', 'S2', 'S3', 'S4'].forEach(s => {
+    const ids = ALL_IDS.filter(i => COMPS[i].s === s);
+    if (!ids.length) return;
+    root.append(bandRow(semLabel(s), ids, () => {
+      const f = ids.find(i => lvl(i) === 1) || ids.find(i => lvl(i) !== 3) || ids[0];
+      gotoWs(THEMES_OF[f][0], f);
+    }));
+  });
+  root.append(h('h3', null, 'Carte des compétences'),
+    h('div', { class: 'leg' }, h('span', null, h('i', { class: 'ok' }), 'acquise'), h('span', null, h('i', { class: 'warn' }), 'en cours'), h('span', null, h('i', { class: 'bad' }), 'à revoir'), h('span', null, h('i', { class: 'none' }), 'non évaluée')));
+  Object.keys(DOM).forEach(d => {
+    const ids = ALL_IDS.filter(i => COMPS[i].d === d);
+    if (!ids.length) return;
+    root.append(h('p', { class: 'mapdom' }, d + ' · ' + DOM[d]));
+    root.append(h('div', { class: 'map' }, ids.map(id =>
+      h('button', { type: 'button', class: 'tile', 'data-l': lvl(id), title: id + ' · ' + COMPS[id].t + ' (' + semLabel(COMPS[id].s) + ')', onclick: () => gotoWs(THEMES_OF[id][0], id) }, id))));
+  });
+}
+
+/* ---------- une thématique ---------- */
+function chipRow(items, cur, cb, label) {
+  return h('div', { class: 'chips', role: 'group', 'aria-label': label }, items.map(it =>
+    h('button', { type: 'button', class: 'chip' + (cur === it[0] ? ' on' : ''), 'aria-pressed': cur === it[0] ? 'true' : 'false', onclick: () => cb(it[0]) }, it[1])));
+}
+function setLevel(id, l) {
+  if (S.r[id] === l) delete S.r[id]; else S.r[id] = l;
+  save();
+  document.querySelectorAll('[data-cid="' + id + '"]').forEach(e => {
+    e.dataset.l = lvl(id);
+    e.querySelectorAll('.rate button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.l === lvl(id))));
+  });
+  renderSeg(); renderAct();
+  const t = themeByKey(UI.cur); if (t) updateTop(t);
+}
+function compEl(id, t, it) {
+  const c = COMPS[id], l = lvl(id);
+  const el = h('div', { class: 'comp', 'data-cid': id, 'data-l': l });
+  const tags = h('div', { class: 'tags' },
+    h('span', { class: 'tag' }, semLabel(c.s)),
+    h('span', { class: 'tag' }, DOM[c.d] || c.d));
+  const other = (THEMES_OF[id] || []).filter(k => k !== t.key);
+  if (other.length) tags.append(h('span', { class: 'tag' }, 'aussi dans : ' + other.map(k => themeByKey(k).title).join(', ')));
+  el.append(
+    h('div', null,
+      h('div', { class: 'chead' }, h('span', { class: 'cid' }, id), h('span', { class: 'ctext' }, c.t)), tags),
+    h('div', { class: 'rate', role: 'group', 'aria-label': 'Niveau pour ' + id },
+      [1, 2, 3].map(n => h('button', { type: 'button', 'data-l': n, 'aria-pressed': String(l === n), onclick: () => setLevel(id, n) }, LEVELS[n].n))));
+  const det = h('details', null, h('summary', null, 'Connaissances associées et note personnelle'));
+  if (c.k.length) det.append(h('ul', null, c.k.map(k => h('li', null, k))));
+  else det.append(h('p', { class: 'small' }, 'Pas de connaissances détaillées pour cette compétence.'));
+  const inp = h('input', { type: 'text', id: 'note-' + t.key + '-' + id, maxlength: 200, placeholder: 'Ex. refaire le TD 3, revoir la démonstration', value: S.n[id] || '', 'aria-label': 'Note personnelle ' + id });
+  inp.addEventListener('input', () => { if (inp.value.trim()) S.n[id] = inp.value; else delete S.n[id]; save(); });
+  det.append(h('label', { class: 'note' }, h('span', null, 'Ma note'), inp));
+  el.append(det);
+  return el;
+}
+function updateTop(t) {
+  const box = $('#top'); if (!box) return;
+  const c = tally(idsOf(t)); box.innerHTML = '';
+  box.append(statsEl(c), barEl(c));
+}
+function mountTheme(root, t) {
+  root.append(h('h2', null, t.title), h('p', { class: 'lead' }, INFO[t.key]), h('div', { id: 'top' }));
+  updateTop(t);
+  const f = h('div', { class: 'filters' });
+  f.append(h('span', { class: 'lbl' }, 'Semestre'), chipRow([['all', 'Tous'], ['S1', 'S1'], ['S2', 'S2'], ['S3', 'S3'], ['S4', 'S4']], F.sem, v => { F.sem = v; mountWs(); }, 'Semestre'));
+  f.append(h('span', { class: 'lbl' }, 'Mon niveau'), chipRow([['all', 'Tous'], ['todo', 'À travailler'], ['3', 'Acquises'], ['0', 'Non évaluées']], F.st, v => { F.st = v; mountWs(); }, 'Niveau'));
+  if (t.axes.length) f.append(h('span', { class: 'lbl' }, 'Chapitre'), chipRow([[-1, 'Tous']].concat(t.axes.map((a, i) => [i, a])), F.ax, v => { F.ax = v; mountWs(); }, 'Chapitre'));
+  root.append(f);
+  const keep = it => {
+    const c = COMPS[it.id], l = lvl(it.id);
+    if (F.sem !== 'all' && c.s !== F.sem) return false;
+    if (F.st === 'todo' && !(l === 1 || l === 2)) return false;
+    if (F.st === '3' && l !== 3) return false;
+    if (F.st === '0' && l !== 0) return false;
+    if (F.ax >= 0 && !it.ax.includes(F.ax)) return false;
+    return true;
+  };
+  const groups = [];
+  if (t.axes.length) t.axes.forEach((a, i) => groups.push({ name: a, items: t.items.filter(it => it.ax[0] === i && keep(it)) }));
+  else {
+    Object.keys(DOM).forEach(d => {
+      const items = t.items.filter(it => COMPS[it.id].d === d && keep(it));
+      if (items.length) groups.push({ name: d + ' · ' + DOM[d], items });
+    });
+  }
+  const noax = t.axes.length ? t.items.filter(it => !it.ax.length && keep(it)) : [];
+  if (noax.length) groups.push({ name: 'Autres', items: noax });
+  let shown = 0;
+  groups.forEach(g => {
+    if (!g.items.length) return;
+    shown += g.items.length;
+    const sec = h('section', { class: 'grp' },
+      h('h3', null, g.name, h('span', { class: 'n' }, g.items.length + (g.items.length > 1 ? ' compétences' : ' compétence'))));
+    g.items.sort((a, b) => a.id.localeCompare(b.id)).forEach(it => sec.append(compEl(it.id, t, it)));
+    root.append(sec);
+  });
+  if (!shown) root.append(h('p', { class: 'empty' }, 'Aucune compétence ne correspond à ces filtres.'));
+}
+
+/* ---------- panneau « Mon bilan » ---------- */
+function renderAct() {
+  const box = $('#act'), btn = $('#bAct');
+  btn.setAttribute('aria-pressed', AS.open ? 'true' : 'false'); btn.classList.toggle('pri', AS.open);
+  box.hidden = !AS.open;
+  if (!AS.open) { box.innerHTML = ''; return; }
+  const oldB = box.querySelector('.pbody'), keep = oldB ? oldB.scrollTop : 0;
+  box.innerHTML = '';
+  const all = tally(ALL_IDS);
+  const todo = ALL_IDS.filter(i => lvl(i) === 1 || lvl(i) === 2).sort((a, b) => lvl(a) - lvl(b) || a.localeCompare(b));
+  const done = ALL_IDS.filter(i => lvl(i) === 3), none = ALL_IDS.filter(i => lvl(i) === 0);
+  box.append(h('div', { class: 'phead' }, h('b', null, 'Mon bilan'), h('span', { class: 'sub' }, all[3] + ' acquises sur ' + all.total), h('button', { class: 'btn sm', type: 'button', onclick: () => { AS.open = false; renderAct(); } }, 'Fermer')));
+  const tabs = [['todo', 'À travailler (' + todo.length + ')'], ['done', 'Acquises (' + done.length + ')'], ['none', 'À évaluer (' + none.length + ')']];
+  box.append(h('div', { class: 'tabs', role: 'tablist' }, tabs.map(x =>
+    h('button', { type: 'button', role: 'tab', 'aria-selected': AS.tab === x[0] ? 'true' : 'false', onclick: () => { AS.tab = x[0]; renderAct(); } }, x[1]))));
+  const body = h('div', { class: 'pbody' });
+  body.append(barEl(all));
+  const list = AS.tab === 'todo' ? todo : AS.tab === 'done' ? done : none;
+  if (AS.tab === 'todo') body.append(h('div', { class: 'goal', style: 'margin-top:10px' }, h('b', null, 'À revoir d’abord. '), 'Les compétences « À revoir » sont en tête de liste, suivies de celles « En cours ». Cliquez pour ouvrir la compétence.'));
+  const wrap = h('div', { class: 'todo' });
+  if (!list.length) wrap.append(h('p', { class: 'empty' }, AS.tab === 'todo' ? 'Rien à travailler pour l’instant. Évaluez vos compétences dans les onglets de thématiques.' : AS.tab === 'done' ? 'Aucune compétence marquée « Acquise » pour l’instant.' : 'Toutes vos compétences sont évaluées.'));
+  list.forEach(id => wrap.append(h('button', { type: 'button', onclick: () => gotoWs(THEMES_OF[id][0], id) },
+    h('span', { class: 'cid mono' }, id),
+    h('span', { class: 'tt' }, COMPS[id].t,
+      h('span', { class: 'where' }, (AS.tab === 'todo' ? LEVELS[lvl(id)].n + ' · ' : '') + semLabel(COMPS[id].s) + ' · ' + themeByKey(THEMES_OF[id][0]).title)))));
+  body.append(wrap);
+  box.append(body); body.scrollTop = keep;
+}
+$('#bAct').addEventListener('click', () => { AS.open = !AS.open; renderAct(); });
+
+/* ---------- fenêtres ---------- */
+function closeDlg() { $('#dlg').hidden = true; $('#dlg').innerHTML = ''; }
+function openDlg(title, body) {
+  const d = $('#dlg'); d.innerHTML = ''; d.hidden = false;
+  d.append(h('div', { class: 'dlgbox', role: 'dialog', 'aria-label': title },
+    h('header', null, h('b', null, title), h('button', { class: 'btn sm', type: 'button', onclick: closeDlg }, 'Fermer')),
+    h('div', { class: 'dbody' }, body)));
+  d.onclick = ev => { if (ev.target === d) closeDlg(); };
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dlg').hidden) closeDlg(); });
+function copyFrom(ta) {
+  ta.select();
+  const ok = () => toast('Copié');
+  try { navigator.clipboard.writeText(ta.value).then(ok, () => { try { document.execCommand('copy'); ok(); } catch (e) { toast('Sélectionné : faites Ctrl+C'); } }); }
+  catch (e) { try { document.execCommand('copy'); ok(); } catch (e2) { toast('Sélectionné : faites Ctrl+C'); } }
+}
+function summaryText() {
+  const lines = ['Bilan de compétences Mathématiques : ' + tally(ALL_IDS)[3] + ' acquises sur ' + ALL_IDS.length, ''];
+  [[1, 'À revoir'], [2, 'En cours']].forEach(([n, name]) => {
+    const ids = ALL_IDS.filter(i => lvl(i) === n);
+    lines.push(name + ' (' + ids.length + ')');
+    ids.forEach(i => lines.push('- ' + i + ' ' + COMPS[i].t + (S.n[i] ? ' [' + S.n[i] + ']' : '')));
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+$('#bSave').addEventListener('click', () => {
+  const code = h('textarea', { id: 'codeBox', 'aria-label': 'Code de sauvegarde', readonly: true }); code.value = JSON.stringify({ v: 1, r: S.r, n: S.n });
+  const sum = h('textarea', { id: 'sumBox', 'aria-label': 'Résumé', readonly: true, style: 'min-height:120px' }); sum.value = summaryText();
+  const inp = h('textarea', { id: 'impBox', 'aria-label': 'Code à charger', placeholder: 'Collez ici un code de sauvegarde' });
+  let arm = null;
+  const reset = h('button', { class: 'btn', type: 'button', onclick: ev => {
+    const b = ev.currentTarget;
+    if (!arm) { b.textContent = 'Confirmer ? Tout sera effacé'; arm = setTimeout(() => { b.textContent = 'Tout effacer'; arm = null; }, 3500); return; }
+    clearTimeout(arm); S.r = {}; S.n = {}; save(); closeDlg(); refresh(); toast('Évaluations effacées');
+  } }, 'Tout effacer');
+  openDlg('Sauvegarde', h('div', null,
+    h('p', null, 'Vos évaluations sont enregistrées dans ce navigateur uniquement. Pour les garder ailleurs ou les changer d’appareil, copiez le code ci-dessous et collez-le sur l’autre appareil.'),
+    h('h3', null, 'Mon code de sauvegarde'), code,
+    h('div', { class: 'files', style: 'margin:6px 0' }, h('button', { class: 'btn', type: 'button', onclick: () => copyFrom(code) }, 'Copier le code')),
+    h('h3', null, 'Charger un code'), inp,
+    h('div', { class: 'files', style: 'margin:6px 0' }, h('button', { class: 'btn pri', type: 'button', onclick: () => {
+      try {
+        const o = JSON.parse(inp.value), r = {}, n = {};
+        if (!o || typeof o.r !== 'object') throw new Error('format');
+        for (const k in o.r) if (COMPS[k] && [1, 2, 3].includes(o.r[k])) r[k] = o.r[k];
+        for (const k in (o.n || {})) if (COMPS[k] && typeof o.n[k] === 'string') n[k] = o.n[k].slice(0, 200);
+        S.r = r; S.n = n; save(); closeDlg(); refresh(); toast('Sauvegarde chargée');
+      } catch (e) { toast('Code non reconnu'); }
+    } }, 'Charger')),
+    h('h3', null, 'Résumé à envoyer à mon professeur'), sum,
+    h('div', { class: 'files', style: 'margin:6px 0' }, h('button', { class: 'btn', type: 'button', onclick: () => copyFrom(sum) }, 'Copier le résumé'), reset)));
+});
+$('#bHelp').addEventListener('click', () => {
+  openDlg('Aide', h('div', { html: '<p>Cette page reprend les compétences du programme de mathématiques sur les deux années de CPGE (PCSI puis PSI), regroupées en 7 thématiques.</p>' +
+    '<h3>Utilisation</h3><ul><li>Ouvrez une thématique et choisissez pour chaque compétence : <b>À revoir</b>, <b>En cours</b> ou <b>Acquise</b>. Un second clic efface le choix.</li><li>Dépliez « Connaissances associées » pour voir ce que la compétence recouvre et ajouter une note.</li><li>Les filtres par semestre, niveau et chapitre aident à trier. S1 et S2 correspondent à la PCSI, S3 et S4 à la PSI.</li><li>« Vue d’ensemble » et « Mon bilan » montrent ce qui est acquis et ce qui reste à travailler.</li><li>Une compétence présente dans plusieurs thématiques garde le même niveau partout.</li></ul>' +
+    '<h3>Vos données</h3><p>Les évaluations sont mémorisées dans ce navigateur uniquement. Le bouton « Sauvegarde » donne un code à copier, pour changer d’appareil ou envoyer un résumé à votre professeur.</p>' }));
+});
+
+/* ---------- thème clair / sombre ---------- */
+function applyTheme(t) {
+  const r = document.documentElement;
+  if (t === 'dark') r.setAttribute('data-theme', 'dark'); else r.setAttribute('data-theme', 'light');
+  const b = $('#bTheme'); if (b) { b.textContent = t === 'dark' ? 'Mode clair' : 'Mode sombre'; b.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false'); }
+}
+(function () {
+  let t = 'light';
+  try { if (localStorage.getItem(KEY + '-theme') === 'dark') t = 'dark'; } catch (e) { /* stockage indisponible */ }
+  applyTheme(t);
+})();
+$('#bTheme').addEventListener('click', () => {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(t);
+  try { localStorage.setItem(KEY + '-theme', t); } catch (e) { /* stockage indisponible */ }
+});
+
+(function init() {
+  AS.open = !isSmall();
+  renderSeg();
+  mountWs();
+  renderAct();
+})();
+</script>
+</body>
+</html>

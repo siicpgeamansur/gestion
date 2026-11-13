@@ -43,7 +43,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn.sm{padding:3px 8px;font-size:12px}
 :is(button,input,select,textarea,summary):focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;background:var(--panel);max-width:100%;overflow-x:auto}
-.seg button{border:0;background:transparent;padding:7px 14px;font-weight:500;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.seg button{border:0;background:transparent;padding:6px 12px;font-weight:500;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
 .main{flex:1;min-height:0;overflow-y:auto}
@@ -95,6 +95,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .period-grid input{background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
 .period-grid .check{flex-direction:row;align-items:center;gap:8px;color:var(--fg);font-size:13px}
 .period-grid .check input{width:auto}
+.period-grid .orient-cell{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
 
 .plan-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0 16px}
 .pstat{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--panel)}
@@ -137,9 +138,8 @@ button,input,select,textarea{font:inherit;color:inherit}
   .slot{grid-template-columns:90px 1fr}
 }
 
-/* ---------- Impression : A4 portrait, une page par semaine (lundi → dimanche) ---------- */
+/* ---------- Impression : base commune ---------- */
 @media print {
-  @page { size: A4 portrait; margin: 10mm; }
   html,body{height:auto !important;overflow:visible !important}
   body{background:#fff !important;color:#000 !important}
   #app, #toast, #dlg{display:none !important}
@@ -152,7 +152,6 @@ button,input,select,textarea{font:inherit;color:inherit}
     line-height:1.35;
   }
 
-  /* Une page par semaine */
   #printRoot .week-page{
     page-break-after: always;
     break-after: page;
@@ -163,7 +162,6 @@ button,input,select,textarea{font:inherit;color:inherit}
     break-after: auto;
   }
 
-  /* Titre de la semaine */
   #printRoot .week-title{
     font-size:13pt;
     margin:0 0 4mm;
@@ -177,13 +175,6 @@ button,input,select,textarea{font:inherit;color:inherit}
   }
   #printRoot .week-title .wt-num{font-weight:700}
   #printRoot .week-title .wt-dates{font-size:10pt;font-weight:400;color:#555}
-
-  /* Grille des jours : 2 colonnes, remplissage ligne par ligne */
-  #printRoot .week-grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3mm;
-  }
 
   #printRoot .plan-day{
     border:1px solid #bbb;
@@ -214,7 +205,6 @@ button,input,select,textarea{font:inherit;color:inherit}
     font-style:italic;
   }
 
-  /* Créneaux : sur une ligne, bien espacés pour remplir la page */
   #printRoot .slot{
     display:flex !important;
     align-items:center;
@@ -253,6 +243,64 @@ button,input,select,textarea{font:inherit;color:inherit}
     font-style:italic;
   }
   #printRoot .slot.lunch .subj{color:#888;font-weight:500}
+}
+</style>
+
+<!-- Styles d'impression dynamiques : portrait / paysage. Le JS active l'un ou l'autre. -->
+<style id="printOrientPortrait" media="print">
+  @page { size: A4 portrait; margin: 10mm; }
+  #printRoot .week-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+  }
+</style>
+<style id="printOrientLandscape" media="print">
+  @page { size: A4 landscape; margin: 8mm; }
+  #printRoot .week-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2mm;
+  }
+  /* En paysage, les créneaux passent sur 2 lignes : [heure | matière] puis [compétence] */
+  #printRoot .slot{
+    display:grid !important;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: baseline;
+    column-gap: 1.5mm;
+    row-gap: 0.2mm;
+    padding: 1.4mm 1.8mm !important;
+  }
+  #printRoot .slot .time{
+    grid-column: 1; grid-row: 1;
+    font-size: 7pt !important;
+    min-width: 0;
+  }
+  #printRoot .slot .subj{
+    grid-column: 2; grid-row: 1;
+    font-size: 9pt !important;
+    min-width: 0;
+  }
+  #printRoot .slot .cont{
+    grid-column: 1 / -1; grid-row: 2;
+    font-size: 8pt !important;
+    white-space: normal;
+    overflow: visible;
+  }
+  #printRoot .slot.lunch{
+    display:flex !important;
+    justify-content:center;
+  }
+  #printRoot .slot.lunch .time,
+  #printRoot .slot.lunch .subj,
+  #printRoot .slot.lunch .cont{
+    font-size:8pt !important;
+  }
+  #printRoot .week-title{
+    font-size:12pt;
+    margin:0 0 3mm;
+  }
 }
 </style>
 </head>
@@ -353,6 +401,7 @@ const S = (() => {
   return {
     tab: s.tab || 'plan',
     activeExam: s.activeExam || null,
+    orientation: s.orientation === 'landscape' ? 'landscape' : 'portrait',
     coeff,
     codes: s.codes || {},
     weeks: typeof s.weeks === 'number' ? s.weeks : 4,
@@ -364,8 +413,23 @@ const S = (() => {
 })();
 function save() {
   lsSet(KEY, {
-    tab: S.tab, activeExam: S.activeExam, coeff: S.coeff, codes: S.codes,
+    tab: S.tab, activeExam: S.activeExam, orientation: S.orientation,
+    coeff: S.coeff, codes: S.codes,
     weeks: S.weeks, extra: S.extra, start: S.start, skipSunday: S.skipSunday
+  });
+}
+
+/* ---------- orientation d'impression ---------- */
+function applyOrientation(o) {
+  S.orientation = o;
+  save();
+  const portraitEl = document.getElementById('printOrientPortrait');
+  const landscapeEl = document.getElementById('printOrientLandscape');
+  if (portraitEl) portraitEl.disabled = (o === 'landscape');
+  if (landscapeEl) landscapeEl.disabled = (o !== 'landscape');
+  /* mise à jour des boutons du sélecteur si présents */
+  document.querySelectorAll('#orientSeg button').forEach(b => {
+    b.setAttribute('aria-pressed', b.dataset.orient === o ? 'true' : 'false');
   });
 }
 
@@ -490,10 +554,25 @@ function renderPlanTab(ws) {
           return inp;
         })(),
         'Repos le dimanche'
+      ),
+      h('div', { class: 'orient-cell' },
+        h('span', null, 'Orientation du PDF'),
+        h('div', { class: 'seg', id: 'orientSeg', role: 'group', 'aria-label': 'Orientation du PDF' },
+          h('button', {
+            type: 'button', 'data-orient': 'portrait',
+            'aria-pressed': S.orientation === 'portrait' ? 'true' : 'false',
+            onclick: () => applyOrientation('portrait')
+          }, 'Portrait'),
+          h('button', {
+            type: 'button', 'data-orient': 'landscape',
+            'aria-pressed': S.orientation === 'landscape' ? 'true' : 'false',
+            onclick: () => applyOrientation('landscape')
+          }, 'Paysage')
+        )
       )
     ),
     h('p', { class: 'lead', style: 'margin:10px 0 0;font-size:12.5px' },
-      'Journée type : 4 blocs de 2 h (8 h de travail effectif), pauses de 15 min et déjeuner d’une heure (12 h 45 – 13 h 45). Le PDF comporte une page par semaine calendaire (lundi → dimanche).')
+      'Journée type : 4 blocs de 2 h (8 h de travail effectif), pauses de 15 min et déjeuner d’une heure (12 h 45 – 13 h 45). Le PDF comporte une page par semaine calendaire (lundi → dimanche). En portrait, 2 jours par ligne ; en paysage, 4 jours par ligne pour exploiter la largeur.')
   ));
 
   ws.append(h('div', { class: 'section', style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
@@ -748,7 +827,7 @@ function renderPlanIntoScreen(plan) {
 
   sec.append(h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px' },
     h('button', { class: 'btn pri', type: 'button', onclick: () => $('#bPrint').click() }, 'Exporter en PDF'),
-    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Format A4 portrait, une page par semaine calendaire (lundi → dimanche).')
+    h('span', { class: 'lead', style: 'font-size:12.5px' }, 'Format A4, une page par semaine calendaire (lundi → dimanche), ' + (S.orientation === 'landscape' ? 'paysage, 4 jours par ligne' : 'portrait, 2 jours par ligne') + '.')
   ));
 
   container.append(sec);
@@ -763,16 +842,12 @@ function renderPlanIntoPrint(plan) {
   if (!root) return;
 
   /* Regroupement par semaine calendaire : lundi → dimanche.
-     Un nouveau groupe démarre à chaque lundi ; un groupe se termine au dimanche
-     ou à la fin de la période. */
+     Un nouveau groupe démarre à chaque lundi ; un groupe se termine au dimanche ou à la fin de la période. */
   const weeks = [];
   let current = [];
   plan.dayList.forEach(day => {
     const dow = day.date.getDay(); // 0 = dimanche, 1 = lundi, …, 6 = samedi
-    if (dow === 1 && current.length > 0) {
-      weeks.push(current);
-      current = [];
-    }
+    if (dow === 1 && current.length > 0) { weeks.push(current); current = []; }
     current.push(day);
   });
   if (current.length) weeks.push(current);
@@ -829,8 +904,7 @@ function renderPlanIntoPrint(plan) {
       }
     });
 
-    html += '</div>'; // .week-grid
-    html += '</div>'; // .week-page
+    html += '</div></div>';
   });
 
   root.innerHTML = html;
@@ -847,8 +921,8 @@ function resetAll() {
           S.codes = {}; S.activeExam = null;
           SUBJECTS.forEach(s => { S.coeff[s.key] = 1; });
           S.weeks = 4; S.extra = 0; S.start = new Date().toISOString().slice(0, 10);
-          S.skipSunday = true; S.plan = null;
-          save(); closeDlg(); renderWs(); $('#bPrint').disabled = true; $('#printRoot').innerHTML = '';
+          S.skipSunday = true; S.orientation = 'portrait'; S.plan = null;
+          save(); applyOrientation('portrait'); closeDlg(); renderWs(); $('#bPrint').disabled = true; $('#printRoot').innerHTML = '';
           toast('Page réinitialisée');
         } }, 'Tout effacer')
       )
@@ -979,6 +1053,7 @@ function openDlg(title, body) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dlg').hidden) closeDlg(); });
 
 /* ---------- init ---------- */
+applyOrientation(S.orientation);
 renderTabs();
 renderWs();
 </script>

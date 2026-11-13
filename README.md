@@ -8,6 +8,8 @@ Voici une page regroupant l'ensemble des compétences à acquérir au cours de l
 
 [Compétences Physique/Chimie CPGE](https://siicpgeamansur.github.io/gestion/competences_PhyChim.html)
 
+[Compétences ITC CPGE](https://siicpgeamansur.github.io/gestion/competences_itc.html)
+
 
 Voici une tentative de créer un colloscope à partir de contraintes de salles, de colleurs, ... :
 

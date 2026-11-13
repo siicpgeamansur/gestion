@@ -18,12 +18,6 @@
   --overlay:rgba(10,16,22,.55);--shadow:rgba(0,0,0,.28);
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#14181d;--bar:#1d232a;--panel:#191e24;--panel2:#212830;--field:#14181d;--line:#3b4551;
-  --fg:#e8ecf0;--muted:#9ba6b2;--accent:#5b9bd5;--accent-fg:#0b1620;--accent-soft:#203449;--accent-ink:#b3d4f2;
-  --ok:#62c673;--warn:#e3a94f;--bad:#f2766d;
-  --ok-soft:rgba(98,198,115,.18);--warn-soft:rgba(227,169,79,.17);--bad-soft:rgba(242,118,109,.17);
-  --overlay:rgba(0,0,0,.65);--shadow:rgba(0,0,0,.6);color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#14181d;--bar:#1d232a;--panel:#191e24;--panel2:#212830;--field:#14181d;--line:#3b4551;
   --fg:#e8ecf0;--muted:#9ba6b2;--accent:#5b9bd5;--accent-fg:#0b1620;--accent-soft:#203449;--accent-ink:#b3d4f2;
@@ -160,6 +154,7 @@ button,input,select,textarea{font:inherit;color:inherit}
     <div class="brand"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="2" width="22" height="22" fill="none" stroke="var(--fg)" stroke-width="1.6"/><rect x="6" y="6" width="14" height="14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><rect x="9.5" y="9.5" width="7" height="7" fill="none" stroke="var(--ok)" stroke-width="1.6"/><rect x="12" y="12" width="2" height="2" fill="var(--warn)"/></svg><span>Suivi des compétences <small>Sciences de l’ingénieur · PCSI / PSI</small></span></div>
     <div class="files">
       <button class="btn" id="bAct" type="button" aria-pressed="false">Mon bilan</button>
+      <button class="btn" id="bTheme" type="button" aria-pressed="false">Mode sombre</button>
       <button class="btn" id="bSave" type="button">Sauvegarde</button>
       <button class="btn" id="bHelp" type="button">Aide</button>
     </div>
@@ -448,6 +443,18 @@ $('#bHelp').addEventListener('click', () => {
   openDlg('Aide', h('div', { html: '<p>Cette page reprend les compétences du programme de sciences de l’ingénieur sur les deux années de CPGE (PCSI puis PSI), regroupées en 7 thématiques.</p>' +
     '<h3>Utilisation</h3><ul><li>Ouvrez une thématique et choisissez pour chaque compétence : <b>À revoir</b>, <b>En cours</b> ou <b>Acquise</b>. Un second clic efface le choix.</li><li>Dépliez « Connaissances associées » pour voir ce que la compétence recouvre et ajouter une note.</li><li>Les filtres par semestre, niveau et chapitre aident à trier. S1 et S2 correspondent à la PCSI, S3 et S4 à la PSI.</li><li>« Vue d’ensemble » et « Mon bilan » montrent ce qui est acquis et ce qui reste à travailler.</li><li>Une compétence présente dans plusieurs thématiques garde le même niveau partout.</li></ul>' +
     '<h3>Vos données</h3><p>Les évaluations sont mémorisées dans ce navigateur uniquement. Le bouton « Sauvegarde » donne un code à copier, pour changer d’appareil ou envoyer un résumé à votre professeur.</p>' }));
+});
+
+/* ---------- thème clair / sombre (clair par défaut) ---------- */
+function applyTheme(t) {
+  const r = document.documentElement;
+  if (t === 'dark') r.setAttribute('data-theme', 'dark'); else r.setAttribute('data-theme', 'light');
+  const b = $('#bTheme'); if (b) { b.textContent = t === 'dark' ? 'Mode clair' : 'Mode sombre'; b.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false'); }
+}
+(function () { let t = 'light'; try { if (localStorage.getItem(KEY + '-theme') === 'dark') t = 'dark'; } catch (e) { /* stockage indisponible */ } applyTheme(t); })();
+$('#bTheme').addEventListener('click', () => {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(t); try { localStorage.setItem(KEY + '-theme', t); } catch (e) { /* stockage indisponible */ }
 });
 
 (function init() { AS.open = !isSmall(); renderSeg(); mountWs(); renderAct(); })();
